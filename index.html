@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elenco Domande e Risposte</title>
+    <style>
+        /* ===========================
+       Variabili CSS
+    =========================== */
+        :root {
+            --primary-color: #0073e6;
+            /* Colore originale delle domande */
+            --secondary-color: #fff;
+            --background-color: #f4f4f4;
+            --text-color: #333;
+            --font-family: Arial, sans-serif;
+            --max-width: 800px;
+            --border-radius: 5px;
+            --padding: 1rem;
+            --font-size-base: 1rem;
+            --line-height-base: 1.5;
+
+            /* Nuove variabili per migliorare la leggibilità */
+            --question-color: #003366;
+            /* Nuovo colore per le domande */
+            --answer-font-weight: bold;
+            /* Aumenta lo spessore del carattere delle risposte */
+            --answer-font-size: 1.2rem;
+            /* Aumenta la dimensione del font delle risposte */
+            --question-font-size: 1.2rem;
+            /* Aumenta la dimensione del font delle domande */
+        }
+
+        /* ===========================
+       Stili Globali
+    =========================== */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            margin: 0;
+            padding-top: 70px;
+            font-size: var(--font-size-base);
+            line-height: var(--line-height-base);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--text-color);
+            font-size: 1.8rem;
+            margin: 0 0 1rem 0;
+            font-weight: bold;
+        }
+
+        /* ===========================
+       Barra di Navigazione Alfabetica
+    =========================== */
+        .alphabet-nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: var(--primary-color);
+            padding: 0.5rem;
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .alphabet-nav a {
+            color: var(--secondary-color);
+            margin: 0 0.5rem;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .alphabet-nav a:hover {
+            text-decoration: underline;
+        }
+
+        /* ===========================
+       Barra di Ricerca a Scomparsa
+    =========================== */
+        .search-bar-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        #search-toggle {
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+            border: none;
+            padding: 0.5rem;
+            font-size: 1.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        #search-bar {
+            margin-top: 0.5rem;
+        }
+
+        #search-bar input[type="text"] {
+            width: 200px;
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: var(--border-radius);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* ===========================
+       Contenitore FAQ
+    =========================== */
+        .faq-container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        /* ===========================
+       Domande e Risposte
+    =========================== */
+        .question,
+        .answer {
+            padding: var(--padding);
+            border-radius: var(--border-radius);
+        }
+
+        .question {
+            background-color: var(--question-color);
+            /* Usa il nuovo colore */
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: var(--question-font-size);
+            /* Aumenta la dimensione del font */
+        }
+
+        .answer {
+            border: 1px solid #ddd;
+            border-top: none;
+            background-color: var(--secondary-color);
+            margin-bottom: 1rem;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            font-weight: var(--answer-font-weight);
+            /* Aumenta lo spessore del carattere */
+            font-size: var(--answer-font-size);
+            /* Aumenta la dimensione del font */
+            color: var(--text-color);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* ===========================
+       Responsive Design
+    =========================== */
+        @media (max-width: 768px) {
+            :root {
+                --font-size-base: 1.2rem;
+                --line-height-base: 1.6;
+                --padding: 1.5rem;
+                --answer-font-size: 1.4rem;
+                --question-font-size: 1.4rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .search-bar-container input[type="text"] {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            :root {
+                --font-size-base: 1.4rem;
+                --line-height-base: 1.7;
+                --padding: 1.5rem;
+                --answer-font-size: 1.6rem;
+                --question-font-size: 1.6rem;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .search-bar-container input[type="text"] {
+                font-size: 1.3rem;
+            }
+        }
+
+
+        /* Mantieni gli stili esistenti per .search-bar-container */
+        .search-bar-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        /* Nuova classe per il contenitore dei pulsanti */
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Stili per entrambi i pulsanti */
+        #button-a,
+        #search-toggle {
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+            border: none;
+            padding: 0.5rem;
+            font-size: 1.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Barra di Navigazione Alfabetica -->
+    <div class="alphabet-nav">
+        <a href="#letter-A">A</a>
+        <a href="#letter-B">B</a>
+        <a href="#letter-C">C</a>
+        <a href="#letter-D">D</a>
+        <a href="#letter-E">E</a>
+        <a href="#letter-F">F</a>
+        <a href="#letter-G">G</a>
+        <a href="#letter-H">H</a>
+        <a href="#letter-I">I</a>
+        <a href="#letter-J">J</a>
+        <a href="#letter-K">K</a>
+        <a href="#letter-L">L</a>
+        <a href="#letter-M">M</a>
+        <a href="#letter-N">N</a>
+        <a href="#letter-O">O</a>
+        <a href="#letter-P">P</a>
+        <a href="#letter-Q">Q</a>
+        <a href="#letter-R">R</a>
+        <a href="#letter-S">S</a>
+        <a href="#letter-T">T</a>
+        <a href="#letter-U">U</a>
+        <a href="#letter-V">V</a>
+        <a href="#letter-W">W</a>
+        <a href="#letter-X">X</a>
+        <a href="#letter-Y">Y</a>
+        <a href="#letter-Z">Z</a>
+    </div>
+
+    <h1>Elenco Domande e Risposte</h1>
+
+    <div class="faq-container" id="faq-container">
+        <div class="faq-item">
+            <div class="question" id="letter-A">All´apice del fusto è presente:</div>
+            <div class="answer">la gemma apicale</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-A">All´estremità della radice, è presente:</div>
+            <div class="answer">la cuffia</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-A">Appartengono alla classe briofite:</div>
+            <div class="answer">muschi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-A">Aspleniaceae, Dryopteridaceae e Athyriaceae sono famiglie di felci, sono
+                quindi:</div>
+            <div class="answer">tracheofite</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-A">A quale famiglia potrebbe appartenere una specie con questo fiore?</div>
+            <div class="answer">Rosaceae</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-A">Alcuni funghi possono modificare la loro crescita passando da uno stato
+                filamentoso ad uno unicellulare:</div>
+            <div class="answer">è il fenomeno detto "dimorfismo"</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-A">Ailanthus altissima, in Italia, è una specie:</div>
+            <div class="answer">invasiva</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-C">Come si chiama la presenza di foglie diverse nella stessa pianta?</div>
+            <div class="answer">eterofillia</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-C">Completa la reazione complessiva della fotosintesi: 6 CO 2 , più 6 H 2O,
+                a dare C 6H dodici O6 , più che cosa?</div>
+            <div class="answer">ossigeno</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-C">Cavolfiore, broccolo, cavolo rapa:</div>
+            <div class="answer">sono specie diverse dello stesso genere</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-C">Candelaria concolor è un lichene a forma:</div>
+            <div class="answer">crostosa</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Da cosa è costituita la membrana cellulare delle cellule vegetali?</div>
+            <div class="answer">Proteine e due strati di fosfolipidi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Daucus carota è il nome scientifico di:</div>
+            <div class="answer">carota</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-E">E´ parassita:</div>
+            <div class="answer">il vischio</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-F">Fusti specializzati in Vitis vinifera sono detti:</div>
+            <div class="answer">viticci</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-F">Fa parte del gineceo del fiore:</div>
+            <div class="answer">pistillo</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-G">Gli sfagni sono:</div>
+            <div class="answer">muschi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-G">Gossypium è il genere al quale appartiene la pianta di:</div>
+            <div class="answer">cotone</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">Il DNA mitocondriale delle cellule vegetali é lungo:</div>
+            <div class="answer">fino a 2.000 kbp</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">Il clorenchima:</div>
+            <div class="answer">è tessuto fotosintetizzante</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">Il periderma si origina da:</div>
+            <div class="answer">fellogeno</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">I meristemi secondari:</div>
+            <div class="answer">sono nella pianta adulta</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">I meristemi hanno cellule:</div>
+            <div class="answer">piú piccole</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">Il rivestimento esterno delle piante con crescita primaria é:</div>
+            <div class="answer">epidermide</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">Individua il termine che non ha a che fare con la foglia:</div>
+            <div class="answer">tessuto spugnato</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">Il rachide si trova nelle foglie:</div>
+            <div class="answer">composte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">Il primordio fogliare è costituito da:</div>
+            <div class="answer">protoderma e meristema fondamentale</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">Il principale tessuto fotosintetico é:</div>
+            <div class="answer">parenchima a palizzata</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">Il mesofillo è:</div>
+            <div class="answer">all´interno della foglia</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">Il colore di una foglia è dato da:</div>
+            <div class="answer">clorofille e pigmenti accessori nel cloroplasto</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">I cirri sono tipici di:</div>
+            <div class="answer">Pisum sativum</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">I fusti delle specie erbacee generalmente:</div>
+            <div class="answer">hanno solo accrescimento primario</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">Il nome scientifico della pianta di patata é:</div>
+            <div class="answer">Solanum tuberosum</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">Il fusto che ha una struttura a nodi-internodi é:</div>
+            <div class="answer">il culmo</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">Il cambio cribro-vascolare nella foglia:</div>
+            <div class="answer">nessuna risposta è corretta</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">Il corpo secondario della pianta deriva da:</div>
+            <div class="answer">due diversi tipi di cambio</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">I peli radicali:</div>
+            <div class="answer">aumentano la superficie di assorbimento</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">Il velamen riveste:</div>
+            <div class="answer">radici aeree</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">In quale infiorescenza sono presenti due diversi tipi di fiore?</div>
+            <div class="answer">capolino</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">Il perianzio comprende:</div>
+            <div class="answer">calice e corolla</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">Il seguente tipo di infiorescenza è tipico di:</div>
+            <div class="answer">Bellis perennis</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">Il frutto della pianta di acero:</div>
+            <div class="answer">samara</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">Il Naturalis historia è l´opera di:</div>
+            <div class="answer">Plinio</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">Il giusto ordine è:</div>
+            <div class="answer">famiglia-genere-specie</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">Il giusto ordine è:</div>
+            <div class="answer">famiglia-genere-specie</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">Il pirenoide:</div>
+            <div class="answer">è un organello che contiene Rubisco</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">I canali laticiferi sono presenti in:</div>
+            <div class="answer">tarassaco</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">In base a quale fattore le piante sono classificate in sciafile ed
+                eliofile?</div>
+            <div class="answer">esposizione alla luce</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">Il genere prevalente nella lecceta è:</div>
+            <div class="answer">Quercus</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">Il termine "hot spot" fu coniato:</div>
+            <div class="answer">Da un ecologo inglese</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">L´insieme delle pareti delle cellule vegetali é detto:</div>
+            <div class="answer">apoplasto</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">La continuità dei citoplasmi è detta:</div>
+            <div class="answer">simplasto</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">Le cellule meristematiche si trovano:</div>
+            <div class="answer">All'apice del fusto</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">L'acino dell'uva è rivestito da una sostanza:</div>
+            <div class="answer">cerosa, detta pruina</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">La linfa elaborata:</div>
+            <div class="answer">è prodotta dalla fotosintesi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">Lo xilema è anche detto:</div>
+            <div class="answer">legno</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">La guttazione:</div>
+            <div class="answer">avviene tramite idatodi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">La foglia di una monocotiledone:</div>
+            <div class="answer">ha nervature parallele</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">La parte espansa della foglie è detta:</div>
+            <div class="answer">lamina</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">La guaina fogliare è tipica di:</div>
+            <div class="answer">graminacee</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">Le foglie rosse sono caratterizzate da:</div>
+            <div class="answer">antociani nel vacuolo</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">L´abscissione della foglia é:</div>
+            <div class="answer">il suo distacco dalla pianta</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">La traspirazione:</div>
+            <div class="answer">comporta perdita di acqua</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">L´agave ha metabolismo:</div>
+            <div class="answer">CAM</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">Le piante crassulacee hanno metabolismo:</div>
+            <div class="answer">CAM</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">Le cellule che compongono lo stoma sono dette:</div>
+            <div class="answer">di guardia</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">L´anatomia di Kranz è presente nelle piante:</div>
+            <div class="answer">C4</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">Le foglie del leccio sono:</div>
+            <div class="answer">sclerofille</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">La ramificazione monopodiale è presente in:</div>
+            <div class="answer">Cipresso</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">La crescita in lunghezza della pianta è dovuta:</div>
+            <div class="answer">ai meristemi primari</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">Le cerchie annuali sono il risultato dell'azione di:</div>
+            <div class="answer">cambio</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">La regione della radice che presenta la banda di Caspary é:</div>
+            <div class="answer">l´endoderma</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">L´esina si trova:</div>
+            <div class="answer">nel granulo di polline</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">L'impollinazione del nocciòlo è per lo più:</div>
+            <div class="answer">anemofila</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">La freccia indica:</div>
+            <div class="answer">endocarpo di drupa</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">Le prime tracheofite a comparire sulla terra furono:</div>
+            <div class="answer">felci</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">Licofite, psilotofite, equisetofite, polipodiofite sono:</div>
+            <div class="answer">tracheofite</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">Le pteridofite:</div>
+            <div class="answer">sono prive di semi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">Le Ophioglossaceae sono:</div>
+            <div class="answer">pteridofite</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">L'immagine rappresenta:</div>
+            <div class="answer">Una pteridofita</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">La seguente specie rappresenta:</div>
+            <div class="answer">una tracheofita</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">Le graminaceae sono:</div>
+            <div class="answer">angiosperme</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">La foto mostra:</div>
+            <div class="answer">Un lichene</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">La figura rappresenta la specie:</div>
+            <div class="answer">betulla</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">La pianta di salvia appartiene alla famiglia:</div>
+            <div class="answer">labiate</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">L’inibizione delle gemme laterali porta:</div>
+            <div class="answer">alla dominanza apicale</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">La luce blu stimola:</div>
+            <div class="answer">L' apertura degli stomi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">La crescita è controllata non dall'ammontare totale delle risorse
+                naturali disponibili, ma dalla disponibilità di quella più scarsa:</div>
+            <div class="answer">è la Legge di Liebig</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">Larix, Populus, Salix, Betula, Alnus sono tipici di:</div>
+            <div class="answer">taiga</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">La sua vegetazione comprende poche specie legnose, muschi, licheni e
+                poche specie erbacee:</div>
+            <div class="answer">tundra</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">La pianta di lino:</div>
+            <div class="answer">è caratterizzata da fiori azzurri</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">La convenzione CITES è in vigore in Italia dal:</div>
+            <div class="answer">1980</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">La "Convenzione di Ramsar" è:</div>
+            <div class="answer">è il trattato per la conservazione e l'utilizzo razionale delle zone umide</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-N">Nei mitocondri avviene il processo di:</div>
+            <div class="answer">respirazione</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-N">Nelle foglie, i vasi conduttori:</div>
+            <div class="answer">sono le nervature</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-N">Nella foglia sono presenti:</div>
+            <div class="answer">2 epidermidi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-N">Nelle gimnosperme, i cotiledoni sono:</div>
+            <div class="answer">fino a 18</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-N">Non sono tracheòfite:</div>
+            <div class="answer">epatiche</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-N">Nicotiana tabacum appartiene alla stessa famiglia di:</div>
+            <div class="answer">Solanum tuberosum</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-N">Nel parassitismo:</div>
+            <div class="answer">una specie tra beneficio dall´altra</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-N">Nella savana tropicale prevalgono specie:</div>
+            <div class="answer">erbacee</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-N">Nella foresta pluviale di montagna, maggiore è la quota:</div>
+            <div class="answer">piú le foglie sono piccole</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-N">Nei "Matorral" e "Maquis" sono presenti per lo più:</div>
+            <div class="answer">sempreverdi con foglie sclerofille</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-O">Osserva la figura e scegli tra le opzioni il nome dell'organo indicato
+                dal punto di domanda:</div>
+            <div class="answer">austori</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-O">Oidio, fillossera e peronospora sono tre avversità di:</div>
+            <div class="answer">vite</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-P">Puó essere sede di fotosintesi:</div>
+            <div class="answer">epidermide</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-P">Presenta fiori labiati:</div>
+            <div class="answer">salvia</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-P">Per identificare una pianta, quale sistema elettronico puó essere
+                utilizzato?</div>
+            <div class="answer">Chiave dicotomica</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale specie non é una cormofita?</div>
+            <div class="answer">muschio</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale sostanza è coinvolta nella abscissione della foglia?</div>
+            <div class="answer">auxina</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale organo in fase giovanile puó svolgere la fotosintesi?</div>
+            <div class="answer">fusto</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale fusto non è legnoso?</div>
+            <div class="answer">scapo</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale tra i seguenti organi non è un fusto?</div>
+            <div class="answer">piumetta</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale tra queste figure rappresenta una sezione trasversale di fusto in
+                struttura primaria vista al microscopio ottico?</div>
+            <div class="answer">B</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale infiorescenza è tipica della carota?</div>
+            <div class="answer">B</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quando l´ovario è posto al di sopra del ricettacolo è detto:</div>
+            <div class="answer">supero</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale termine non è uno stadio dell´embriogenesi?</div>
+            <div class="answer">bastoncino</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale termine non è una modalità di dispersione del seme?</div>
+            <div class="answer">pedocora</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quello che si spacca con lo spaccanoci per estrarre il gheriglio di noce
+                è:</div>
+            <div class="answer">endocarpo di drupa</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale affermazione sui cianobatteri è falsa?</div>
+            <div class="answer">Non sono in grado di compiere la fotosintesi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale tra i seguenti generi è estinto?</div>
+            <div class="answer">Rhynia</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale specie è una gimnosperma?</div>
+            <div class="answer">abete</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale immagine rappresenta una gimnosperma?</div>
+            <div class="answer">nessuna delle due</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale immagine rappresenta una gimnosperma?</div>
+            <div class="answer">A</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale specie è una angiosperma?</div>
+            <div class="answer">B</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale fiore è tipico dei membri della famiglia delle Leguminosae?</div>
+            <div class="answer">A</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale tra le seguenti specie è un organismo modello?</div>
+            <div class="answer">Pisum sativum</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale specie non appartiene alla famiglia delle leguminose?</div>
+            <div class="answer">Senape</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale affermazione sulle specie appartenenti alla famiglia delle
+                leguminose è falsa?</div>
+            <div class="answer">sono tutte specie erbacee</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale affermazione è falsa?</div>
+            <div class="answer">Il lichene coinvolge sempre un alga</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale ormone vegetale è coinvolto nella curvatura del fusto secondo
+                gravitá?</div>
+            <div class="answer">auxina</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale organo rilascia etilene?</div>
+            <div class="answer">il frutto in maturazione</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale ormone vegetale è gassoso?</div>
+            <div class="answer">etilene</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale tra le seguenti sostanze non é un ormone vegetale?</div>
+            <div class="answer">acido piruvico</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale tra le seguenti sostanze non è un ormone vegetale?</div>
+            <div class="answer">acido piruvico</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale specie è brevidiurna?</div>
+            <div class="answer">crisantemo</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale affermazione sull´olivo è vera:</div>
+            <div class="answer">Ha foglie sempreverdi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quali specie appartengono alla stessa famiglia?</div>
+            <div class="answer">cotone e malva</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale affermazione sugli hotspot di bio diversità è falsa?</div>
+            <div class="answer">il numero di hotspot è in declino</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-S">Sono noti botanici:</div>
+            <div class="answer">Thal, Linneo</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-S">Sono aghiformi, le foglie di:</div>
+            <div class="answer">conifere</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-S">Sopra l´inserzione delle foglie sono presenti:</div>
+            <div class="answer">le gemme ascellari</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-S">Sessile è il fiore senza:</div>
+            <div class="answer">peduncolo</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-S">Semi di colori vivaci e grandi dimensioni potranno avere, per lo più,
+                dispersione:</div>
+            <div class="answer">zoocora</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-S">Sono funghi:</div>
+            <div class="answer">i lieviti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-S">Selezione la risposta corretta in riferimento alla figura:</div>
+            <div class="answer">il fiore femminile è rappresentato dalla figura e</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-S">Sono detti “psicrofili” i funghi capaci di vivere:</div>
+            <div class="answer">a temperature minime fra 3 e 5°C</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-S">Si definisce “titolo” dei concimi:</div>
+            <div class="answer">la percentuale in peso dell’elemento chimico contenuto nel concime commercializzato
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-S">Secondo il sistema di classificazione di Raunkiaer, un albero di pero é:
+            </div>
+            <div class="answer">una fanerofita</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-S">Secondo il sistema di classificazione di Raunkiaer, un albero di
+                ciliegio é:</div>
+            <div class="answer">una fanerofita</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-S">Se una specie è "estinta in natura" significa che:</div>
+            <div class="answer">é presente ma esclusivamente negli orti botanici</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-T">Trasporta la linfa grezza:</div>
+            <div class="answer">xilema</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-T">Tunica e corpus formano:</div>
+            <div class="answer">il cono vegetativo</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-U">Un sinonimo di "caule" é:</div>
+            <div class="answer">fusto</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-U">Una pianta esotica:</div>
+            <div class="answer">è alloctona</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-U">Una specie molto utilizzata per la preparazione di creme per le sue
+                proprietà calmanti, emollienti e antisettiche é:</div>
+            <div class="answer">Calendula officinalis</div>
+        </div>
+
+
+
+
+        <!-- Continua con il resto delle domande -->
+        <!-- ... -->
+    </div>
+
+    <!-- Contenitore per entrambi i pulsanti -->
+    <div class="search-bar-container">
+        <div class="button-container">
+            <button id="button-a" onclick="window.location.href='aperte.html'">A</button>
+            <button id="search-toggle">&#128269;</button>
+        </div>
+        <div id="search-bar" class="hidden">
+            <input type="text" id="search-input" placeholder="Cerca una domanda...">
+        </div>
+    </div>
+
+    <script>
+        // Toggle visibilità della barra di ricerca
+        document.getElementById('search-toggle').addEventListener('click', function () {
+            const searchBar = document.getElementById('search-bar');
+            searchBar.classList.toggle('hidden');
+        });
+
+        // Funzionalità di ricerca
+        document.getElementById('search-input').addEventListener('input', function () {
+            const searchQuery = this.value.toLowerCase();
+            const faqItems = document.querySelectorAll('.faq-item');
+
+            faqItems.forEach(item => {
+                const question = item.querySelector('.question').innerText.toLowerCase();
+                const answer = item.querySelector('.answer').innerText.toLowerCase();
+
+                if (question.includes(searchQuery) || answer.includes(searchQuery)) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        });
+
+        // Assegna automaticamente gli ID alle domande (opzionale)
+        (function () {
+            const faqItems = document.querySelectorAll('.faq-item .question');
+            const lettersFound = {};
+
+            faqItems.forEach(question => {
+                const firstLetter = question.innerText.trim().charAt(0).toUpperCase();
+                if (!lettersFound[firstLetter]) {
+                    lettersFound[firstLetter] = true;
+                    question.id = 'letter-' + firstLetter;
+                }
+            });
+        })();
+    </script>
+
+</body>
+
+</html>

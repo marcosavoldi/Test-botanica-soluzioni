@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elenco Risposte</title>
+    <style>
+       /* ===========================
+   Variabili CSS
+=========================== */
+:root {
+    --primary-color: #0073e6;         /* Blu navbar, pulsanti, ecc. */
+    --secondary-color: #fff;          /* Bianco */
+    --background-color: #f4f4f4;      /* Sfondo generale pagina */
+    --text-color: #333;               /* Testo principale */
+    --font-family: Arial, sans-serif;
+    --max-width: 800px;
+    --border-radius: 5px;
+    --padding: 1rem;
+    --font-size-base: 1rem;
+    --line-height-base: 1.5;
+
+    /* Colori e font per question/answer */
+    --question-bg-color: #0073e6;     /* Sfondo blu per la domanda */
+    --question-text-color: #fff;      /* Testo bianco per la domanda */
+    --question-font-size: 1.2rem;
+
+    --answer-bg-color: #fff;          /* Sfondo bianco per la risposta */
+    --answer-text-color: #333;        /* Testo nero per la risposta */
+    --answer-font-weight: bold;
+    --answer-font-size: 1.2rem;
+}
+
+/* ===========================
+   Stili Globali
+=========================== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--background-color);
+    margin: 0;
+    padding-top: 70px; /* lascia spazio per la navbar fissa */
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+}
+
+h1 {
+    text-align: center;
+    color: var(--text-color);
+    font-size: 1.8rem;
+    margin: 0 0 1rem 0;
+    font-weight: bold;
+}
+
+/* ===========================
+   Barra di Navigazione Alfabetica
+=========================== */
+.alphabet-nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: var(--primary-color);
+    padding: 0.5rem;
+    text-align: center;
+    z-index: 1000;
+}
+
+.alphabet-nav a {
+    color: var(--secondary-color);
+    margin: 0 0.5rem;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.alphabet-nav a:hover {
+    text-decoration: underline;
+}
+
+/* ===========================
+   Barra di Ricerca a Scomparsa
+=========================== */
+.search-bar-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+#search-toggle {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    border: none;
+    padding: 0.5rem;
+    font-size: 1.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+#search-bar {
+    margin-top: 0.5rem;
+}
+
+#search-bar input[type="text"] {
+    width: 200px;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: var(--border-radius);
+}
+
+.hidden {
+    display: none;
+}
+
+/* ===========================
+   Pulsante per tornare alla Index (opzionale)
+=========================== */
+#back-button {
+    position: fixed;
+    bottom: 80px; /* Posizionato sopra il pulsante della lente */
+    right: 20px;
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    border: none;
+    padding: 0.5rem;
+    font-size: 1.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    text-align: center;
+    line-height: 1;
+}
+
+/* ===========================
+   Contenitore FAQ
+=========================== */
+.faq-container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+/* 
+   Ogni blocco di Domanda+Risposta.
+   Se preferisci un bordo esterno comune, aggiungi qui border, background, ecc.
+*/
+.faq-item {
+    margin-bottom: 1rem; /* Spazio tra una FAQ e l'altra */
+}
+
+/* ===========================
+   DOMANDA
+   - Sottofondo blu e testo bianco
+=========================== */
+.question {
+    background-color: var(--question-bg-color);
+    color: var(--question-text-color);
+    font-size: var(--question-font-size);
+    padding: var(--padding);
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    margin: 0; /* Rimuoviamo eventuali margin di default */
+    font-weight: bold;
+}
+
+/* ===========================
+   RISPOSTA
+   - Sfondo bianco e testo nero
+=========================== */
+.answer {
+    background-color: var(--answer-bg-color);
+    color: var(--answer-text-color);
+    padding: var(--padding);
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+    border: 1px solid #ddd;
+    border-top: none; /* per unire visivamente con la domanda */
+    font-weight: var(--answer-font-weight);
+    font-size: var(--answer-font-size);
+    margin: 0; 
+}
+
+/* ===========================
+   Responsive Design
+=========================== */
+@media (max-width: 768px) {
+    :root {
+        --font-size-base: 1.2rem;
+        --line-height-base: 1.6;
+        --padding: 1.5rem;
+        --answer-font-size: 1.4rem;
+        --question-font-size: 1.4rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    #search-bar input[type="text"] {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --font-size-base: 1.4rem;
+        --line-height-base: 1.7;
+        --padding: 1.5rem;
+        --answer-font-size: 1.6rem;
+        --question-font-size: 1.6rem;
+    }
+
+    h1 {
+        font-size: 2.2rem;
+    }
+
+    #search-bar input[type="text"] {
+        font-size: 1.3rem;
+    }
+}
+
+/* ====================================
+   (Facoltativo) Se hai altri pulsanti
+==================================== */
+.button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#button-a,
+#search-toggle {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    border: none;
+    padding: 0.5rem;
+    font-size: 1.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+    </style>
+</head>
+
+<body>
+
+    <!-- Barra di Navigazione Alfabetica -->
+    <div class="alphabet-nav">
+        <a href="#letter-A">A</a>
+        <a href="#letter-B">B</a>
+        <a href="#letter-C">C</a>
+        <a href="#letter-D">D</a>
+        <a href="#letter-E">E</a>
+        <a href="#letter-F">F</a>
+        <a href="#letter-G">G</a>
+        <a href="#letter-H">H</a>
+        <a href="#letter-I">I</a>
+        <a href="#letter-J">J</a>
+        <a href="#letter-K">K</a>
+        <a href="#letter-L">L</a>
+        <a href="#letter-M">M</a>
+        <a href="#letter-N">N</a>
+        <a href="#letter-O">O</a>
+        <a href="#letter-P">P</a>
+        <a href="#letter-Q">Q</a>
+        <a href="#letter-R">R</a>
+        <a href="#letter-S">S</a>
+        <a href="#letter-T">T</a>
+        <a href="#letter-U">U</a>
+        <a href="#letter-V">V</a>
+        <a href="#letter-W">W</a>
+        <a href="#letter-X">X</a>
+        <a href="#letter-Y">Y</a>
+        <a href="#letter-Z">Z</a>
+    </div>
+
+    <h1>Elenco Risposte</h1>
+
+    <div class="answer-container" id="answer-container">
+        <div class="faq-item">
+            <div class="question" id="letter-1">1 Descrivere l'albero raffigurato: A la foglia, B il fiore, C il
+                frutto. 2 ipotizzare a quale famiglia potrebbe appartenere e giustificare la risposta.</div>
+            <div class="answer">Foglia:composte e pennate;costituite da una serie di foglioline disposte in modo
+                alternato su un asse centrale.Le foglioline sono di forma ovale con estremità arrotondata. Fiore:i fiori
+                sono raccolti in piccoli grappoli con forma arrotondati. Frutto:sono baccelli allungati e incurvati con
+                semi all' interno. Appartiene alla famiglia delle Fabaceae (o Leguminosae), per le foglie composte,
+                fiori a grappolo e frutto a baccello.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-A">A Nominare 3 specie che producono frutti secchi e 3 specie a frutti
+                carnosi B specificare "il tipo" di frutto per ogni specie</div>
+            <div class="answer">A Specie che producono frutti secchi: Faggio (Fagus sylvatica) - Frutto: achenio
+                (faggiole). Noce (Juglans regia) - Frutto: noce (drupa secca indeiscente). Frassino (Fraxinus excelsior)
+                - Frutto: samara. Specie che producono frutti carnosi: Melo (Malus domestica) - Frutto: pomo. Ciliegio
+                (Prunus avium) - Frutto: drupa. Uva (Vitis vinifera) - Frutto: bacca.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-A">A quale famiglia appartengono le seguenti specie? A quali generi?
+                Descrivi una delle tre specie a scelta.</div>
+            <div class="answer">A. Castanea sativa (castagno); B. Fagus sylvatica (faggio); C. Corylus (nocciolo). Le
+                prime due sono Fagaceae mentre la terza appartiene alla famiglia delle Betulaceae. La A
+                foglie:lanceolate con margini seghettati.Infiorescenze:amenti allungati.frutti:racchiusi in un involucro
+                chiamato "riccio" contenente i semi (le castagne).</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-C">Cosa studia la paleobotanica?</div>
+            <div class="answer">La paleobotanica studia i resti fossili delle piante, analizzandone la struttura,
+                l’evoluzione e le relazioni con gli ambienti del passato. Questa disciplina aiuta a comprendere
+                l’origine delle piante e per la ricostruzione degli ecosistemi ancestrali.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-C">Collenchima e sclerenchima: funzioni e differenze</div>
+            <div class="answer">Il collenchima e lo sclerenchima sono tessuti di sostegno, ma con funzioni e
+                caratteristiche diverse. Il collenchima è formato da cellule vive con pareti ispessite in modo
+                irregolare da cellulosa e pectina. Fornisce supporto elastico alle parti giovani della pianta in
+                crescita, permettendo flessibilità senza interrompere lo sviluppo. Lo sclerenchima, invece, è costituito
+                da cellule morte con pareti lignificate e ispessite uniformemente, come fibre e sclereidi. Offre un
+                sostegno rigido e meccanico alle parti mature della pianta. La principale differenza è che il
+                collenchima è vivo e flessibile, mentre lo sclerenchima è morto e rigido.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere tre discipline botaniche.</div>
+            <div class="answer">La fisiologia vegetale che studia i processi vitali delle piante, come la fotosintesi,
+                la respirazione, il trasporto di nutrienti e la regolazione degli ormoni, per comprendere come
+                funzionano internamente. L’ecologia vegetale che si concentra sulle interazioni delle piante con
+                l’ambiente e con altri organismi, analizzando la loro distribuzione, gli adattamenti e il ruolo che
+                svolgono negli ecosistemi. La tassonomia vegetale che si occupa di classificare, descrivere e denominare
+                le piante, utilizzando caratteristiche morfologiche e genetiche per ordinarle in un sistema gerarchico.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere almeno cinque funzioni delle piante.</div>
+            <div class="answer">Le piante svolgono diverse funzioni fondamentali per la vita sulla Terra. Fotosintesi:
+                Le piante usano la luce solare, l'acqua e l'anidride carbonica per produrre il proprio cibo sotto forma
+                di zuccheri e rilasciare ossigeno nell'atmosfera. Respirazione: Le piante, come gli animali, respirano.
+                Usano l'ossigeno per trasformare gli zuccheri prodotti nella fotosintesi in energia per crescere e
+                svolgere altre funzioni vitali. Trasporto di acqua e nutrienti: Le piante assorbono acqua e nutrienti
+                dal suolo attraverso le radici e li trasportano alle altre parti della pianta, come foglie e fiori,
+                grazie a sistemi come il floema e lo xilema. Riproduzione: Le piante si riproducono tramite semi, fiori
+                o spore. Possono farlo sia in modo sessuato (con impollinazione e fertilizzazione) che asessuato (come
+                talee o rizomi). Adattamento all'ambiente: Le piante si adattano alle condizioni del loro ambiente, come
+                la temperatura, la luce e la disponibilità d’acqua, per sopravvivere e crescere.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere l´origine della botanica come scienza.</div>
+            <div class="answer">La botanica è la disciplina scientifica che si occupa dello studio delle piante. Ha
+                origini antiche dove le piante erano studiate per le loro proprietà medicinali e alimentari. Con il
+                tempo, l'interesse per la botanica si è spostato verso aspetti più ampi e culturali. Questa scienza
+                implica attività come l'osservazione, la registrazione, l'organizzazione e la classificazione delle
+                informazioni relative alle piante.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere il trasporto apoplastico e simplastico.</div>
+            <div class="answer">Il trasporto apoplastico avviene attraverso la parete cellulare e gli spazi
+                intercellulari, senza entrare nel citoplasma, consentendo un movimento rapido di acqua e soluti. È
+                limitato dalla banda del Caspary nelle radici, che forza l’ingresso nel citoplasma. Il trasporto
+                simplastico, invece, si svolge attraverso il citoplasma delle cellule connesse dai plasmodesmi,
+                permettendo uno scambio selettivo di sostanze. I due trasporti collaborano nel movimento dell’acqua e
+                dei nutrienti lungo la pianta.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere la parete vegetale e le sue modificazioni.</div>
+            <div class="answer">La parete vegetale è una struttura rigida che circonda la membrana cellulare delle
+                cellule vegetali. È composta principalmente da cellulosa, emicellulose, pectine e, in alcuni casi,
+                lignina. Fornisce sostegno meccanico, mantiene la forma cellulare, regola lo scambio di sostanze e
+                protegge da agenti esterni. Può subire modificazioni come la lignificazione per rigidità, la
+                suberificazione per impermeabilità, la cutinizzazione per ridurre la perdita d’acqua, e la
+                mineralizzazione, che ne aumenta la resistenza meccanica, adattando la cellula a funzioni specifiche o
+                stress ambientali.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere la cellula vegetale.</div>
+            <div class="answer">La cellula vegetale è un’unità fondamentale delle piante, caratterizzata dalla presenza
+                di una parete cellulare rigida composta da cellulosa, che le conferisce forma e sostegno; un grande
+                vacuolo centrale che regola il turgore e immagazzina sostanze e possiede plastidi come i cloroplasti,
+                organelli responsabili della fotosintesi, che le consentono di produrre energia. Queste strutture la
+                distinguono dalla cellula animale. È dotata poi di un nucleo, che controlla le funzioni cellulari, e di
+                altri organelli come mitocondri, reticolo endoplasmatico e apparato di Golgi, simili alle cellule
+                animali, ma distintivi per la presenza di strutture legate alla funzione vegetale.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere le differenze tra cellula animale e cellula vegetale.</div>
+            <div class="answer">La cellula vegetale si differenzia da quella animale per via di diverse caratteristiche:
+                la presenza della parete cellulare, si trova attorno alla membrana plasmatica e conferisce rigidità e
+                forma e serve come protezione e sostegno per la cellula, mentre quella animale ne è sprovvista; un
+                vacuolo molto grande, presente nella c.veg che contiene ioni, acidi organici, zuccheri, proteine e
+                acqua, e consente la crescita, il funzionamento della c. e ad immagazzinare le sostanze chimiche
+                necessarie per la sopravvivenza; e sempre nel citoplasma troviamo i plastidi, tipo i cloroplasti che
+                contengono la clorofilla responsabili della fotosintesi clorofilliana; inoltre nel citoplasma della
+                c.veg non sono presenti i centrioli, piccoli organuli di forma cilindrica che hanno un'importante
+                funzione nella riproduzione cellulare. Le cellule vegetali possono essere molto più grandi di quelle
+                animali.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere il mitocondrio della cellula vegetale.</div>
+            <div class="answer">Sono organelli presenti sia nella cellula vegetale che animale, importanti per la
+                respirazione. La struttura dei mitocondri è uguale sia nelle cellule vegetali che animali e con una
+                forma a “fagiolo”. E' delimitato da una doppia membrana: una esterna liscia e una interna ripiegata a
+                formare le creste, che aumentano la superficie per le reazioni chimiche. Al suo interno si trovano la
+                matrice mitocondriale e il DNA mitocondriale, che gli permettono di sintetizzare proteine. È il sito
+                della respirazione cellulare, durante la quale produce energia sotto forma di ATP, fondamentale per i
+                processi metabolici della pianta.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere gli organelli del citoplasma della cellula vegetale.</div>
+            <div class="answer">Gli organelli del citoplasma della cellula vegetale includono i plastidi tra cui i
+                cloroplasti, responsabili della fotosintesi, e i mitocondri, che producono energia attraverso la
+                respirazione cellulare. L’apparato di Golgi modifica e smista le proteine e i lipidi, mentre il reticolo
+                endoplasmatico (liscio e rugoso) è coinvolto nella sintesi di proteine e lipidi. I ribosomi, presenti
+                liberi o sul reticolo rugoso, partecipano alla sintesi proteica. Il vacuolo centrale regola il turgore
+                cellulare e immagazzina sostanze. Infine, i perossisomi e i lisosomi sono coinvolti nella
+                detossificazione e nella degradazione di molecole.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere morfologia e funzioni del vacuolo.</div>
+            <div class="answer">Il vacuolo è un grande organello delimitato da una membrana chiamata tonoplasto, che
+                occupa la maggior parte del citoplasma nelle cellule vegetali mature. Al suo interno contiene acqua,
+                sali, zuccheri, enzimi e metaboliti secondari. La sua funzione principale è regolare il turgore
+                cellulare, mantenendo la rigidità della cellula e contribuendo alla forma della pianta. Inoltre, il
+                vacuolo immagazzina sostanze di riserva e tossiche, partecipa alla degradazione di molecole e regola
+                l’equilibrio osmotico della cellula.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere la morfologia e la funzione dei diversi tipi di plastidi
+                della cellula vegetale.</div>
+            <div class="answer">I plastidi sono organelli della cellula vegetale con una doppia membrana, presenti in
+                diverse forme a seconda della funzione. I cloroplasti sono verdi grazie alla clorofilla e svolgono la
+                fotosintesi. I cromoplasti di colore arancio, accumulano pigmenti carotenoidi e sono coinvolti
+                nell’attrazione degli impollinatori. I leucoplasti sono incolore e immagazzinano amido e si trovano nei
+                tessuti di riserva. Cloroplasti, cromoplasti e leucoplasti derivano tutti dal precursore proplastidio.
+                Tutti i plastidi possono trasformarsi l’uno nell’altro in base alle esigenze della cellula.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere morfologia e funzioni del cloroplasto.</div>
+            <div class="answer">Il cloroplasto è la forma più antica di plastidio. E' un organello delimitato da una
+                doppia membrana e presente nelle cellule vegetali. Ha forma sferica e al suo interno si trovano i
+                tilacoidi, disposti in grana, circondati dallo stroma, una matrice contenente enzimi, DNA e ribosomi. I
+                tilacoidi contengono clorofilla e altri pigmenti, essenziali per catturare l’energia luminosa. Il
+                cloroplasto è il sito della fotosintesi, processo che converte l’energia solare in energia chimica,
+                producendo glucosio e ossigeno, fondamentali per il metabolismo della pianta e degli ecosistemi.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere il fenomeno della poliploidia, nominare una specie
+                poliploide.</div>
+            <div class="answer">La poliploidia è un fenomeno in cui un organismo possiede più di due set completi di
+                cromosomi, come risultato di errori nella divisione cellulare o della fusione di gameti non ridotti.
+                Nelle piante, questo fenomeno può aumentare la dimensione dei frutti, la resistenza agli stress e la
+                variabilità genetica. Un esempio di specie poliploide è il frumento comune (Triticum aestivum), che è
+                esaploide (6n), Nicotiana tabacum o mais.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere i tessuti adulti della pianta.</div>
+            <div class="answer">I tessuti adulti della pianta si dividono in tegumentali, fondamentali e vascolari. I
+                tessuti tegumentali, come l’epidermide e il periderma, proteggono la pianta e regolano gli scambi con
+                l’ambiente. I tessuti fondamentali includono il parenchima, coinvolto nella fotosintesi e riserva, il
+                collenchima, che fornisce sostegno alle parti giovani, e lo sclerenchima, che offre supporto meccanico
+                alle parti mature. I tessuti vascolari comprendono lo xilema, che trasporta acqua e sali minerali, e il
+                floema, che distribuisce nutrienti organici prodotti dalla fotosintesi. Questi tessuti insieme
+                garantiscono protezione, sostegno e trasporto nella pianta adulta.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere le differenze tra meristemi primari e secondari.</div>
+            <div class="answer">I meristemi primari sono tessuti indifferenziati presenti nelle regioni apicali di
+                radici e fusti, responsabili della crescita in lunghezza della pianta (crescita primaria). Producono
+                tessuti come protoderma, procambio e meristema fondamentale. I meristemi secondari, invece, si
+                sviluppano in piante adulte e derivano da cellule adulte che riprendono la capacità di dividersi. Sono
+                responsabili della crescita in spessore (crescita secondaria) e comprendono il cambio vascolare, che
+                genera xilema e floema secondari, e il fellogeno, che produce il periderma.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere la classificazione dei tessuti meristematici.</div>
+            <div class="answer">I tessuti meristematici si classificano in meristemi primari e meristemi secondari. I
+                meristemi primari si trovano nelle zone di crescita apicale di radici e fusti, come l’apice radicale e
+                l’apice caulinare, e sono responsabili della crescita in lunghezza della pianta (crescita primaria).
+                Comprendono protoderma, procambio e meristema fondamentale. I meristemi secondari, presenti nelle piante
+                adulte, derivano dalla dedifferenziazione di cellule adulte e consentono la crescita in spessore
+                (crescita secondaria). Tra questi, il cambio vascolare produce xilema e floema secondari, mentre il
+                fellogeno genera il periderma.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere le caratteristiche delle cellule meristematiche.</div>
+            <div class="answer">Le cellule meristematiche sono indifferenziate e altamente attive nella divisione
+                mitotica. Hanno una forma generalmente isodiametrica, pareti sottili e plastiche, e un citoplasma denso
+                con grandi nuclei centrali. Presentano piccoli vacuoli o sono privi di vacuoli nelle fasi iniziali.
+                Queste cellule non contengono sostanze di riserva, ma sono metabolicamente attive, e si trovano in
+                regioni specifiche della pianta come gli apici di radici e fusti, dove garantiscono la crescita e la
+                formazione di nuovi tessuti.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere la sintesi e la morfologia del sughero.</div>
+            <div class="answer">Il sughero è prodotto dal fellogeno, un meristema secondario situato nel periderma delle
+                piante. Durante la sintesi, il fellogeno divide le sue cellule, formando il sughero (o suberina) verso
+                l’esterno e il felloderma verso l’interno. Le cellule del sughero sono morte, con pareti ispessite
+                impregnate di suberina, una sostanza cerosa che rende il tessuto impermeabile e isolante.
+                Morfologicamente, il sughero appare come uno strato compatto di cellule prismatiche sovrapposte, che
+                proteggono la pianta da perdita d’acqua, agenti patogeni e condizioni esterne. È particolarmente
+                sviluppato in piante come il sughero (Quercus suber).</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere il meccanismo di movimento della linfa all´interno della
+                pianta.</div>
+            <div class="answer">Il movimento della linfa nella pianta avviene attraverso due tipi principali: linfa
+                grezza e linfa elaborata. La linfa grezza (acqua e sali minerali) è trasportata dallo xilema mediante il
+                meccanismo di trasporto apoplastico e simplastico, guidato dalla pressione radicale, dalla capillarità
+                e, soprattutto, dalla trazione generata dalla traspirazione, che crea un gradiente di pressione negativa
+                spingendo l’acqua dalle radici verso le foglie. La linfa elaborata (prodotti della fotosintesi) è
+                trasportata dal floema attraverso il trasporto attivo e il flusso di massa, generato da differenze di
+                pressione osmotica tra le sorgenti (foglie) e i sink (zone di utilizzo o riserva), garantendo la
+                distribuzione dei nutrienti all’interno della pianta.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere le differenze tra floema e xilema.</div>
+            <div class="answer">Il floema e lo xilema sono tessuti vascolari con funzioni e caratteristiche distinte. Lo
+                xilema trasporta linfa grezza (acqua e sali minerali) dalle radici alle foglie, utilizzando forze
+                fisiche come traspirazione e pressione radicale. È composto da cellule morte come tracheidi e vasi, con
+                pareti lignificate per offrire supporto strutturale. Il floema, invece, trasporta linfa elaborata
+                (sostanze organiche prodotte dalla fotosintesi) dalle foglie verso le altre parti della pianta. È
+                formato da cellule vive come tubi cribrosi e cellule compagne, con pareti sottili e non lignificate. Lo
+                xilema opera un flusso unidirezionale (radici-foglie), mentre il floema ha un flusso bidirezionale
+                (sorgenti-sink).</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere funzione e localizzazione dei nettári.</div>
+            <div class="answer">I nettari sono strutture secretorie che producono nettare, una soluzione zuccherina
+                utilizzata per attrarre impollinatori che si accumula nelle cisterne di ER e Golgi per poi essere
+                riversato all’esterno per fusione delle vescicole con il plasmalemma. Si distinguono in nettari
+                floreali, situati all’interno dei fiori, spesso vicino agli organi riproduttivi, per favorire
+                l’impollinazione, e nettari extrafloreali, presenti su foglie, stipole o fusti, che attraggono formiche
+                o altri organismi utili a difendere la pianta da erbivori. La loro funzione principale è quindi di
+                supportare la riproduzione o protezione della pianta.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere la foglia di una specie a scelta: margine, lamina, apice,
+                base, disposizione nervature, fillotassi</div>
+            <div class="answer">Foglia di Ficus elastica (pianta del caucciù): Margine: Liscio e intero, senza
+                seghettature o incisioni. Lamina: Ovata o ellittica, coriacea e lucida, con una consistenza spessa e
+                carnosa. Il colore è verde scuro lucido sulla superficie superiore, verde più chiaro su quella
+                inferiore. Apice: Acuminato, con una leggera punta affusolata. Base: Arrotondata o leggermente cuneata.
+                Disposizione delle nervature: Nervatura pennata, con una vena centrale prominente da cui si diramano
+                nervature laterali secondarie che convergono verso il margine. Fillotassi: Alterna, con foglie singole
+                disposte in modo sfalsato lungo il ramo.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere la morfologia della foglia:</div>
+            <div class="answer">La foglia è l'organo principale delle piante vascolari responsabile della fotosintesi,
+                della respirazione e della traspirazione. La parte espansa della foglia è detta lamina o lembo fogliare.
+                Sulla foglia è possibile distinguere una faccia superiore o ventrale, detta adassiale, e una inferiore o
+                dorsale, detta abassiale. La lamina fogliare è connessa al fusto tramite peduncolo, detto picciolo,
+                quelle senza picciolo sono dette sessili (angiosperme motocotiledoni). Le foglie possono essere semplici
+                (a lamina intera) o composte (quando più foglie partono da un asse detto rachide). La lamina è
+                caratterizzata da nervature che costituiscono il sistema conduttore della foglia e possono avere
+                disposizione diversa (penninervie, parallelinervie).</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere i tessuti presenti nella foglia.</div>
+            <div class="answer">La foglia è costituita da diversi tessuti specializzati. L’epidermide è un tessuto
+                tegumentale che ricopre la superficie superiore e inferiore, proteggendo la foglia e regolando gli
+                scambi gassosi attraverso gli stomi. Il mesofillo, un tessuto parenchimatico, è diviso in due strati: il
+                parenchima a palizzate, ricco di cloroplasti, dove avviene la fotosintesi, e il parenchima lacunoso, con
+                spazi intercellulari per favorire lo scambio di gas. I fasci vascolari (xilema e floema), all’interno
+                delle nervature, trasportano acqua, sali minerali e sostanze organiche, e forniscono supporto
+                strutturale. Questi tessuti collaborano per ottimizzare la fotosintesi, la traspirazione e il trasporto
+                di sostanze.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere lo sviluppo della foglia, dalla genesi all´abscissione.</div>
+            <div class="answer">Lo sviluppo della foglia inizia con la formazione di un primordio fogliare,
+                un’estroflessione di cellule indifferenziate del meristema apicale del fusto. Durante la fase di
+                crescita, le cellule si differenziano formando l’epidermide, il mesofillo e i fasci vascolari. La lamina
+                fogliare si espande grazie alla divisione e all’allungamento cellulare, assumendo la forma
+                caratteristica della specie. La foglia matura svolge funzioni come fotosintesi, traspirazione e scambi
+                gassosi. L’abscissione avviene con l’invecchiamento o in risposta a stress, grazie alla formazione di un
+                tessuto di abscissione alla base del picciolo, che permette il distacco controllato della foglia senza
+                danneggiare i tessuti circostanti.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere le differenze tra piante C3, C4 e CAM, nominare un esempio di
+                specie per sistema.</div>
+            <div class="answer">Le piante C3, come il frumento, utilizzano il ciclo di Calvin direttamente per fissare
+                la CO₂, con la formazione di 3-fosfoglicerato come primo prodotto. Sono comuni in climi temperati, ma
+                soffrono di fotorespirazione in condizioni di alta temperatura e bassa CO₂. Le piante C4, come il mais,
+                fissano la CO₂ in un composto a 4 atomi di carbonio (ossalacetato) nelle cellule del mesofillo,
+                trasferendolo poi alle cellule della guaina del fascio per il ciclo di Calvin. Questo sistema è
+                efficiente in climi caldi e secchi, riducendo la fotorespirazione. Le piante CAM, come l’ananas,
+                immagazzinano CO₂ di notte in acidi organici e la rilasciano durante il giorno per la fotosintesi,
+                minimizzando la perdita d’acqua. Sono adattate ad ambienti aridi.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere il processo di fotosintesi in una pianta C3.</div>
+            <div class="answer">Nelle piante C3, la fotosintesi avviene in due fasi principali: la fase luminosa e il
+                ciclo di Calvin. Durante la fase luminosa, che si svolge nei tilacoidi dei cloroplasti, la luce solare
+                viene catturata dai pigmenti, eccitando gli elettroni. Questo porta alla scissione dell’acqua
+                (fotolisi), con produzione di ossigeno, ATP e NADPH. Nel ciclo di Calvin, che avviene nello stroma, la
+                CO₂ viene fissata dalla RuBisCO in un composto a tre atomi di carbonio (3-fosfoglicerato). Questo
+                composto viene successivamente convertito in glucosio, utilizzando l’energia di ATP e NADPH. Le piante
+                C3, tuttavia, soffrono di fotorespirazione in condizioni di alta temperatura, riducendo l’efficienza del
+                processo.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere il processo di traspirazione della foglia.</div>
+            <div class="answer">La traspirazione è il processo attraverso cui la foglia perde acqua sotto forma di
+                vapore, principalmente attraverso gli stomi. L’acqua assorbita dalle radici viene trasportata attraverso
+                lo xilema fino alla foglia, dove evapora dalle cellule del mesofillo e diffonde nell’atmosfera tramite
+                gli stomi. Questo movimento è guidato da un gradiente di pressione del vapore tra l’interno della foglia
+                e l’aria circostante. La traspirazione è regolata dall’apertura e chiusura degli stomi, controllata
+                dalle cellule di guardia in risposta a luce, umidità e disponibilità d’acqua. Serve per il
+                raffreddamento della pianta, il trasporto di nutrienti e la creazione della forza necessaria per
+                assorbire acqua dalle radici.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivi la foglia in figura:tipo, margine, lamina, nervature,... a
+                quale famiglia e a quale genere appartiene la specie raffigurata?</div>
+            <div class="answer">La foglia è semplice, picciolata, con lamina ovata e con margine seghettato con
+                dentellature ben visibili lungo i bordi. Le nervature sono penninervie con una nervatura centrale da cui
+                partono nervature secondarie. La famiglia è quella delle Rosaceae. Il genere è il Prunus, specie Prunus
+                cerasus, nome comune del ciliegio.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere gli antofilli: morfologia e funzioni.</div>
+            <div class="answer">Gli antofilli sono le foglie modificate che formano il fiore, suddivise in petali e
+                sepali. I petali, generalmente colorati, costituiscono la corolla e servono ad attirare gli
+                impollinatori grazie a colori vivaci e, talvolta, profumi. I sepali, che compongono il calice,
+                proteggono il fiore in fase di bocciolo. Morfologicamente, i petali sono spesso sottili e delicati,
+                mentre i sepali sono più robusti e di colore verde. In alcuni fiori, petali e sepali possono essere
+                indistinguibili, formando i tepali. La funzione complessiva degli antofilli è proteggere le strutture
+                riproduttive e favorire l’impollinazione.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere 5 tipi di foglie particolari o foglie modificate.</div>
+            <div class="answer">1.Foglie carnivore: presenti in piante come la Venere acchiappamosche, sono modificate
+                per catturare e digerire insetti, fornendo azoto in ambienti poveri di nutrienti. 2. Spine: in piante
+                come il cactus, le foglie si trasformano in spine per ridurre la perdita d’acqua e proteggere dai
+                predatori. 3. Tendini fogliari: in piante rampicanti come il pisello, le foglie o parti di esse si
+                modificano in strutture filiformi per aiutare la pianta a arrampicarsi. 4. Foglie succulente: in piante
+                come l’aloe, sono carnose e immagazzinano acqua per resistere a condizioni di siccità. 5. Brattee:
+                foglie modificate, spesso colorate, come quelle della bouganville, che attraggono impollinatori
+                sostituendo i petali.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere similitudini e differenze tra la morfologia delle foglie di
+                Olea europea e quella delle specie di genere Pinus .</div>
+            <div class="answer">Le foglie di Olea europaea (olivo) e quelle delle specie del genere Pinus presentano
+                alcune similitudini e differenze significative. Entrambe sono adattate a ridurre la perdita d’acqua in
+                ambienti aridi: nell’olivo le foglie sono lanceolate, coriacee, con cuticola spessa e margine intero,
+                mentre nei pini le foglie sono aghiformi, sottili e cilindriche. Entrambi i tipi hanno una superficie
+                ridotta e stomi infossati per limitare la traspirazione. Tuttavia, le foglie di Olea europaea hanno una
+                morfologia più complessa con una nervatura centrale visibile e funzione fotosintetica prominente su
+                entrambi i lati, mentre quelle dei pini, con struttura semplice, sono più specializzate per sopravvivere
+                a condizioni di siccità estrema e accumulare resine.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere la classificazione dei fusti delle piante legnose.</div>
+            <div class="answer">I fusti delle piante legnose si classificano in base alla forma e all’adattamento.
+                Arborea: caratterizzata da un unico tronco principale che si ramifica in alto, come nella quercia.
+                Arbustiva: con più tronchi secondari che si sviluppano dalla base, come nel biancospino. Lianosa: fusti
+                sottili e flessibili che necessitano di supporto per arrampicarsi, come nelle specie di vite. Questa
+                classificazione riflette le strategie delle piante legnose per colonizzare diversi ambienti e
+                ottimizzare la cattura della luce.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere la seguente immagine: A)si tratta di sezione trasversale di
+                quale organo? B)nominare le parti indicate dalle lettere</div>
+            <div class="answer">Si tratta del fusto o stele di una dicotilede, detto "eustele". I fasci sono collaterali
+                e sono distribuiti secondo una circonferenza e separati da raggi midollari che collegano il midollo al
+                cilindro corticale. A epidermide, B corteccia, C tessuto vascolare, D midollo.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere l´anatomia di una sezione trasversale di fusto di pianta
+                erbacea.</div>
+            <div class="answer">L'anatomia della struttura primaria del fusto si riferisce all'organizzazione dei
+                tessuti in un fusto giovane che non ha ancora subito modificazioni dovute alla crescita secondaria.
+                Questa struttura è costituita da tre sistemi principali: epidermide, corteccia e cilindro centrale, con
+                alcune variazioni tra monocotiledoni e dicotiledoni. L' epidermide è lo strato più esterno del fusto è
+                composto da un singolo strato di cellule, spesso rivestite da una cuticola cerosa e ha la funzione di
+                protezione contro la disidratazione, i patogeni e i danni meccanici. Può includere stomi per lo scambio
+                gassoso e tricomi per ulteriore protezione. La corteccia è situata sotto l'epidermide. È formata da
+                collenchima, parenchima e endoderma (nei dicotiledoni). La funzione è di sostegno, accumulo di sostanze
+                nutritive e trasporto di acqua e soluti. Il cilindro centrale (Stele) è la parte più interna del fusto.
+                È formato da -fasci cribro-vascolari che contengono xilema e floema. Xilema: Trasporta acqua e sali
+                minerali dalle radici al resto della pianta. Floema: Trasporta zuccheri e sostanze organiche prodotte
+                durante la fotosintesi. Nei dicotiledoni, i fasci vascolari sono disposti in un anello intorno al
+                midollo. Nei monocotiledoni, i fasci sono sparsi nel tessuto parenchimatico. -Cambiale (nei
+                dicotiledoni): Uno strato di cellule meristematiche tra xilema e floema, responsabile della crescita
+                secondaria. -Midollo: Zona centrale composta da cellule parenchimatiche, utilizzata per immagazzinare
+                sostanze.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere l´anatomia della struttura primaria del fusto.</div>
+            <div class="answer">L'anatomia della struttura primaria del fusto si riferisce all'organizzazione dei
+                tessuti in un fusto giovane che non ha ancora subito modificazioni dovute alla crescita secondaria.
+                Questa struttura è costituita da tre sistemi principali: epidermide, corteccia e cilindro centrale, con
+                alcune variazioni tra monocotiledoni e dicotiledoni. L' epidermide è lo strato più esterno del fusto è
+                composto da un singolo strato di cellule, spesso rivestite da una cuticola cerosa e ha la funzione di
+                protezione contro la disidratazione, i patogeni e i danni meccanici. Può includere stomi per lo scambio
+                gassoso e tricomi per ulteriore protezione. La corteccia è situata sotto l'epidermide. È formata da
+                collenchima, parenchima e endoderma (nei dicotiledoni). La funzione è di sostegno, accumulo di sostanze
+                nutritive e trasporto di acqua e soluti. Il cilindro centrale (Stele) è la parte più interna del fusto.
+                È formato da -fasci cribro-vascolari che contengono xilema e floema. Xilema: Trasporta acqua e sali
+                minerali dalle radici al resto della pianta. Floema: Trasporta zuccheri e sostanze organiche prodotte
+                durante la fotosintesi. Nei dicotiledoni, i fasci vascolari sono disposti in un anello intorno al
+                midollo. Nei monocotiledoni, i fasci sono sparsi nel tessuto parenchimatico. -Cambiale (nei
+                dicotiledoni): Uno strato di cellule meristematiche tra xilema e floema, responsabile della crescita
+                secondaria. -Midollo: Zona centrale composta da cellule parenchimatiche, utilizzata per immagazzinare
+                sostanze.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere la funzione del cambio subero-fellodermico.</div>
+            <div class="answer">Il cambio subero-fellodermico o fellogeno è un meristema secondario laterale formato da
+                un monostrato di cellule cubiche che originano "sughero" verso l'esterno e "felloderma" verso l'interno.
+                Fellogeno, sughero e felloderma costituiscono il "periderma". A maturità, le c. di sughero muoiono.
+                L'impermeabilità del sughero fa si che tutti i tessuti ad esso esterni muoiano per mancanza di nutrienti
+                e acqua. L'insieme dei tessuti all'esterno del fellogeno è detto "scorza" o "ritidoma". Le "lenticelle"
+                nel periderma permettono gli scambi gassosi, si formano dove erano presenti uno o più stomi; in autunno
+                le regioni interne delle lenticelle suberificano, chiudendole, in primavera il nuovo fellogeno deriva
+                dalla ripresa dell'attività del cambio s-f spinge i tessuti verso l'esterno e fa riaprire le lenticelle.
+                Lo "xilema secondario" o "legno" è costituito da trachee e/o tracheidi circondati da tessuti
+                parenchimatici, meccanici, secretori. Ha un sistema assiale con funzione di conduzione, meccanica,
+                riserva; un sistema radiale con funzione di collegamento trasversale e riserva. Il "floema secondario" o
+                "libro" o "cribro" è costituito da sistema assiale, con tubi cribrosi o c. cribrose, parenchima, fibre,
+                sclereidi, e sistema radiale, con parenchima dei tubi midollari.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere l´anatomia della struttura secondaria del fusto.</div>
+            <div class="answer">Le gimnosperme e alcune angiosperme presentano una struttura secondaria del fusto che
+                comporta accrescimento secondario, in diametro, grazie a due meristemi laterali: il "cambio
+                cribro-legnoso" e il "cambio subero-fellodermico". Il cambio "cribro-legnoso" detto anche
+                "cribro-vascolare" è il meristema che origina lo xilema e il floema secondario e i tessuti
+                parenchimatici che li circondano. Deriva dal procambio e dalle cellule dei raggi midollari primari. Il
+                cambio "fascicolare" si forma all'interno dei fasci conduttori primari; il cambio "interfascicolare" si
+                forma per differenziamento delle cellule dei raggi midollari. Il cambio "c-l" comprende 2 tipi di c.: le
+                "iniziali fusiformi", le "iniziali dei raggi". Le prime si dividono originando 2 c.: una c. "madre del
+                floema secondario" e una c. fusiforme che rimane tale; le c. "madri" si differenziano in xilema,
+                prodotto verso l'interno, o floema, verso l'esterno. Le c. iniziali dei raggi originano le c. dei "raggi
+                midollari", che sono coinvolti nel trasporto di acqua e altre sostanze (fotosintati) e nell'accumulo di
+                nutrienti. Con la crescita in diametro del fusto i raggi midollari primari si distanziano e tra loro
+                vengono prodotti nuovi "raggi midollari secondari".</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere l´anatomia dell´apice della radice.</div>
+            <div class="answer">L’apice radicale è la zona sotto alla cuffia che si divide per mitosi aumentando il
+                numero di cellule della radice. All’apice della radice ci sono cellule meristematiche (meristema
+                apicale). L’apice radicale è composto da tre tessuti. Il rizoderma è l’epidermide della radice che si
+                origina dal meristema primario; il meristema fondamentale è il meristema primario che origina i tessuti
+                parenchimatici della corteccia: il procambio è il meristema primario che origina il tessuto vascolare
+                del cilindro centrale. Il centro quiescente è la zona centrale del meristema apicale le cui cellule si
+                dividono raramente.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere la classificazione delle radici specializzate.</div>
+            <div class="answer">Le radici specializzate sono radici che si sono adattate a svolgere funzioni particolari
+                oltre alla tradizionale ancoraggio e assorbimento di acqua e nutrienti. Radici tuberizzate o
+                "rizotuberi" o "bulbotuberi", sono radici ingrossate, con il parenchima corticale specializzato
+                nell'assorbimento e contenimento di sostanze di riserva. Pneumatofori o "radici respiratorie", sono
+                radici aeree specializzate in grado di assorbire O dall'ambiente sopraterra. Austori, le tipiche radici
+                delle piante parassite che penetrano nei tessuti conduttori della pianta ospite per succhiarne il
+                contenuto, assorbire sostanze nutritive dell'ospite. Radici di piante di mangrovie, la cui
+                caratteristica è la presenza di "radici accessorie" che sollevano il tronco dal fango. Radici
+                contrattili sono le radici avventizie che bulbi, tuberi e rizomi emettono per fissarsi meglio al terreno
+                e controllare l'interramento della base del fusto, per mantenere la giusta profondità anche in occasioni
+                sfavorevoli. Radici aeree o "pendenti", sono le radici avventizie di molte orchidee epifite che vegetano
+                su alberi tropicali, sono rivestite dal "velamen" in grado di assorbire umidità atmosferica e l'acqua
+                depositata sulle foglie dalle piogge o dalla rugiada.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere i tipi di riproduzione vegetativa.</div>
+            <div class="answer">La riproduzione di piante e dei funghi può essere di tipo vegetativo o sessuale. La
+                riproduzione vegetativa (agamica) permette la moltiplicazione di un individuo in seguito a divisione del
+                corpo vegetativo o al distacco di una sua parte. I processi sono molti e lo stesso organismo ne può
+                attuare più di uno: scissione binaria, gemmazione, frammentazione, sporulazione.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere il ciclo "aplo-diplonte".</div>
+            <div class="answer">Il ciclo aplo-diplonte è un tipo di ciclo vitale presente in alcuni organismi, come
+                alghe e funghi, in cui ci sono due fasi principali: una aploide (con cellule che hanno un solo set di
+                cromosomi) e una diploide (con cellule che hanno due set di cromosomi). Fase aploide: Gli organismi
+                producono gameti aploidi tramite mitosi. I gameti si uniscono durante la fecondazione, formando uno
+                zigote diploide. Fase diploide: Lo zigote diploide cresce e può subire meiosi per produrre spore
+                aploidi. Queste spore si sviluppano in nuovi organismi aploidi, chiudendo il ciclo. Questo alternarsi di
+                fasi permette la diversità genetica e l'adattamento.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere il ciclo "aplonte".</div>
+            <div class="answer">Il ciclo aplònte è un tipo di ciclo vitale in cui l'organismo trascorre la maggior parte
+                della sua vita nella fase aploide (con un solo set di cromosomi). Fase aploide: L'organismo cresce e si
+                sviluppa come individuo aploide. Produce gameti (cellule riproduttive) tramite mitosi. Fecondazione: I
+                gameti si uniscono, formando uno zigote diploide (con due set di cromosomi). Meiosi: Lo zigote diploide
+                subisce subito la meiosi, dividendo i cromosomi e producendo spore aploidi. Spore: Le spore si
+                sviluppano in nuovi individui aploidi, chiudendo il ciclo. Un esempio di ciclo aplonte si trova in molti
+                tipi di alghe e funghi.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere gli elementi fiorali della pianta di mais.</div>
+            <div class="answer">La pianta di mais è una graminacea con una struttura fiorale ben definita, composta da
+                elementi maschili e femminili che si sviluppano su parti separate della pianta (monoica). Fiori
+                maschili: Si trovano nella pannocchia, una struttura apicale ramificata situata in cima alla pianta.
+                Ogni fiore maschile è costituito da tre stami, ognuno con un'antera che produce polline che viene
+                disperso dal vento. Fiori femminili: Si trovano nella spiga, posizionata lateralmente lungo il fusto,
+                generalmente avvolta dalle brattee (le foglie modificate). Ogni fiore femminile ha un ovario uniloculare
+                contenente un ovulo. Dallo stesso ovario si sviluppano i "filamenti setolosi" (stili), comunemente noti
+                come "setole del mais" o "barba", che sporgono dalla spiga per catturare il polline disperso nell'aria.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere quattro tipi di infiorescenza, riportare anche esempi di
+                specie.</div>
+            <div class="answer">I fiori sono singoli o riuniti in gruppi (infiorescenze). Infiorescenza a raggio, con
+                fiori disposti su ramificazioni che si irradiano simmetricamente da un punto centrale verso l' alto,
+                formando una struttura a ventaglio ordinata. Infiorescenza a ombrella, caratterizzata da fiori che
+                partono dallo stesso punto sulla sommità del gambo e si estendono uniformemente, creando una forma a
+                cupola o ombrello compatto. Infiorescenza racemosa (o grappolo), con fiori distribuiti lungo un asse
+                centrale verticale; i fiori più giovani si trovano in cima mentre quelli più maturi alla base.
+                Infiorescenza a calice, con fiori posizionati su un piano orizzontale formando una struttura aperta,
+                simile ad un piccolo nido.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere gli elementi fiorali.</div>
+            <div class="answer">L'androceo è formato da uno o più stami. Lo stame ha antera e filamento. L'antera ha 2
+                teche, formate da 2 sacche polliniche (logge). Ogni loggia contiene le cellule madri delle microspore
+                dalle quali derivano i granuli di polline. L'antera matura è formata da: 1) epidermide (esotecio), 2)
+                strato meccanico (endotecio) che fa aprire l’antera per il rilascio del polline, 3) strato intermedio
+                (connettivo) che tiene uniti i tessuti, 4) tappeto che riveste le sacche proteggendo e nutrendo il
+                polline.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere i quattro tipi di infiorescenza rappresentati.</div>
+            <div class="answer">I fiori sono singoli o riuniti in gruppi (infiorescenze). A Infiorescenza a raggio, con
+                fiori disposti su ramificazioni che si irradiano simmetricamente da un punto centrale verso l' alto,
+                formando una struttura a ventaglio ordinata. B Infiorescenza a ombrella, caratterizzata da fiori che
+                partono dallo stesso punto sulla sommità del gambo e si estendono uniformemente, creando una forma a
+                cupola o ombrello compatto. C Infiorescenza racemosa (o grappolo), con fiori distribuiti lungo un asse
+                centrale verticale; i fiori più giovani si trovano in cima mentre quelli più maturi alla base. D
+                Infiorescenza a calice, con fiori posizionati su un piano orizzontale formando una struttura aperta,
+                simile ad un piccolo nido.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Dopo aver nominato tutte le parti delle lettere, descrivere anatomia e
+                funzioni delle parti costituenti l' androceo del fiore.</div>
+            <div class="answer">A OVULI: sono strutture riproduttive femminile contenute nell' ovario. Contengono il
+                gamete femminile e una volta fecondati si sviluppano in semi. B OVARIO: parte inferiore del gineceo che
+                contiene gli ovuli. Dopo la fecondazione si sviluppa in frutto. C STILO: struttura allungata che collega
+                lo stigma all' ovario, attraverso il quale il tubo pollinico cresce per raggiungere gli ovuli. D STIGMA:
+                porzione apicale del gineceo, spesso appiccicosa, che cattura e trattiene i granuli di polline per la
+                fecondazione. E PISTILLO: organo riproduttivo femminile del fiore. È composto da stilo, stigma e ovario.
+                È responsabile della riproduzione femminile. F ANTERA: parte superiore dello stame che produce e
+                contiene i granuli di polline, necessari per la fecondazione. G STAME: organo riproduttivo maschile del
+                fiore composto da antere e filamenti, che produce il polline. H FILAMENTO: struttura che sostiene l'
+                antera e la posizione in modo da facilitare il trasferimento del polline. I SEPALO: parte esterna del
+                fiore, che protegge il bocciolo durante lo sviluppo. J PETALO: strutture colorate che attirano gli
+                impollinatori e proteggono le parti riproduttive del fiore.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere l´androceo del fiore.</div>
+            <div class="answer">L'androceo è l'organo riproduttivo maschile del fiore, responsabile della produzione e
+                del rilascio del polline. È composto da una o più unità chiamate stami. Ogni stame include due parti
+                principali: Antera: La parte terminale dello stame, dove si formano e maturano i granuli di polline. È
+                costituita da sacche polliniche che si aprono per rilasciare il polline durante l'impollinazione.
+                Filamento: Una struttura sottile e allungata che sostiene l'antera e la posiziona in una posizione
+                favorevole per il trasferimento del polline. Le funzioni sono di produzione del polline e facilitazione
+                dell'impollinazione.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere la fasi della fecondazione dell´ovulo, dall´arrivo del
+                granulo di polline sullo stigma alla formazione dello zigote.</div>
+            <div class="answer">La fecondazione dell’ovulo nelle piante angiosperme inizia quando un granulo di polline
+                raggiunge lo stigma del fiore, grazie al trasporto da parte del vento, dell’acqua o di impollinatori
+                come insetti e uccelli. Lo stigma trattiene il granulo favorendo l’avvio del processo. Si forma un tubo
+                pollinico che attraversa lo stilo e arriva all’ovulo attraverso il micropilo. Qui, il tubo pollinico
+                rilascia due nuclei spermatici. Uno si unisce all’oosfera, formando lo zigote, che darà origine
+                all’embrione, mentre l’altro si fonde con i nuclei polari per formare l’endosperma, che nutrirà
+                l’embrione. Successivamente, l’ovulo si trasforma in seme e l’ovario in frutto, completando il ciclo
+                riproduttivo.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere i tipi di impollinazione, riportando anche esempi.</div>
+            <div class="answer">Anemofila: il polline è affidato al vento. (es.graminacee). • Zoofila o entomofila: ad
+                opera di animali (piccoli uccelli, ...) o insetti (api, ...). I fiori hanno colori vivaci e profumi,
+                sono ricchi di nettare. (es.margherite, melo, pero ..). • Idrofila: ad opera dell'acqua, i fiori
+                maschili delle piante acquatiche si staccano e sono spostati con l’acqua verso il fiore femminile (es.
+                vallisneria).</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere i tipi di dispersione del seme, riportando anche esempi.
+            </div>
+            <div class="answer">La dispersione dei semi avviene secondo diversi meccanismi. • Anemocoria: dispersione
+                del seme attraverso il vento tipica dei semi piccoli. Es. Tarassaco, Dente di leone. • Zoocoria:
+                dispersione del seme attraverso gli animali. È tipica dei semi grandi e colorati o che hanno strutture
+                che si appiccicano ai peli degli animali. I semi dei frutti commestibili attraversano il sistema
+                digerente per essere rilasciati in altri luoghi. Es. Ciliegie, Caffè. • Idrocoria: dispersione del seme
+                attraverso l'acqua (piovana e corsi d'acqua), nel caso di semi galleggianti che vengono spinti dalle
+                correnti per poi affondare ed emettere radici ad un certo grado di imbibizione. Es. Noce di cocco. •
+                Autocoria: dispersione del seme per autodisseminazione o per caduta del frutto. Es. Mele,Limoni. Alcuni
+                semi sono contenuti in capsule che si aprono e spruzzano i semi a distanza.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere la classificazione dei frutti secchi.</div>
+            <div class="answer">I frutti secchi si classificano in base alla modalità di apertura (deiscenza) e alla
+                struttura del frutto. Frutti secchi deiscenti che si aprono spontaneamente a maturità per liberare i
+                semi. Capsula: frutto derivato da un gineceo sincarpico (es. papavero). Legume: frutto derivato da un
+                gineceo monocarpellare che si apre lungo due linee (es. pisello). Follicolo: simile al legume, ma si
+                apre lungo una sola linea (es. elleboro). Siliqua e silicula: tipiche delle Brassicaceae, derivano da un
+                gineceo bicarpellare con un setto centrale (es. rucola). Frutti secchi indeiscenti non si aprono a
+                maturità, i semi restano racchiusi nel pericarpo. Achenio: frutto con un solo seme non saldato al
+                pericarpo (es. girasole). Samara: achenio con un'espansione alare (es. frassino). Cariosside: seme fuso
+                al pericarpo, tipico delle Poaceae (es. grano). Nocciola: frutto con pericarpo legnoso, generalmente
+                monocarpellare (es. nocciolo). Frutti secchi schizocarpi che si dividono in porzioni monosperme
+                (mericarpi) a maturità. Disamara: schizocarpo con due samare (es. acero). Regma: schizocarpo che si
+                divide in tre o più mericarpi (es. geranio)</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere il frutto secondo la teoria classica e quella di Winkler.
+            </div>
+            <div class="answer">Secondo la teoria classica, il frutto si forma esclusivamente dall'ovario di un fiore
+                dopo la fecondazione. La teoria di Winkler, invece, include anche altre parti del fiore, come il
+                ricettacolo, nella formazione del frutto. Così, se il frutto deriva solo dall’ovario, è un vero frutto
+                (come il pisello o la ciliegia). Se coinvolge altre parti, è uno pseudofrutto. Ad esempio, la mela è uno
+                pseudofrutto perché la parte carnosa viene dal ricettacolo, e l’ananas è uno pseudofrutto complesso,
+                formato da più fiori uniti.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere la struttura dei frutti carnosi.</div>
+            <div class="answer">I frutti carnosi sono quelli in cui il pericarpo, cioè la parete del frutto, a maturità
+                diventa morbido e succoso. La loro struttura è composta da tre strati. L’epicarpo è lo strato più
+                esterno, spesso visibile come la buccia del frutto o più spessa e resistente. Il mesocarpo, lo strato
+                intermedio, è generalmente carnoso e ricco di acqua e zuccheri, ed è solitamente la parte che mangiamo.
+                Infine, l’endocarpo è lo strato più interno, che avvolge i semi; può essere sottile e membranoso, come
+                nelle bacche (ad esempio il pomodoro), oppure duro e legnoso, come nelle drupe (ad esempio la pesca o la
+                ciliegia). I frutti carnosi si dividono principalmente in tre categorie. Le drupe, come la pesca o la
+                ciliegia, contengono un solo seme racchiuso in un endocarpo legnoso. Le bacche, come il pomodoro o
+                l’uva, hanno molti semi immersi in una polpa carnosa. Infine, i pomi, come la mela o la pera, si
+                sviluppano non solo dall’ovario, ma anche da altre parti del fiore, come il ricettacolo, che forma la
+                parte carnosa del frutto.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere il seguente organo:</div>
+            <div class="answer">Rappresenta il frutto di una drupa, come una pesca. E è caratterizzato da: A= la buccia,
+                lo strato più esterno del frutto. B= la polpa, ricca di zuccheri e nutrienti è la parte carnosa del
+                frutto che circonda il seme. C= il seme, protetto da un endocarpo legnoso (nocciolo).</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere le regole di nomenclatura delle specie vegetali riportando
+                almeno tre esempi.</div>
+            <div class="answer">La nomenclatura binomiale fu inventata dal botanico e medico Bauhin, ma fu Carlo Linneo
+                a farla diventare regola di nomenclatura. Egli descrisse con un nome scientifico tutte le specie viventi
+                allora conosciute, assegnando a ciascuna un doppio nome: il primo si riferisce al genere (nome generico)
+                e il secondo alla specie (nome specifico). Per convenzione internazionale il nome scientifico deve
+                essere scritto in minuscolo, salvo la prima lettera del nome generico. Il nome o la sigla che si trova
+                dopo il nome scientifico si riferisce allo scopritore, es. Robinia pseudoacacia L. è la comune robinia e
+                L è l’iniziale di Linneo. Lo studioso che scopre un nuovo genere o specie nell’ambito di un genere già
+                noto, ha diritto didecidere il nome e di pubblicarlo; tutti sono tenuti a usare il nome stabilito. In
+                genere si preferisce che il nome specifico ricordi una caratteristica, es. Vitis vinifera (vite
+                produttrice di vino). Possono esistere più nomi per indicare la stessa pianta (nomi volgari). Ci sono
+                nomi locali, dialettali, che variano da regione a regione. Es. lattuga (Lactuca sativa L.) comunemente
+                ed erroneamente chiamata "insalata".</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere la classificazione dei vegetali in briofite e tracheofite.
+            </div>
+            <div class="answer">La classificazione dei vegetali in briofite e tracheofite si basa sulla presenza o
+                assenza di strutture specializzate per il trasporto di acqua e nutrienti. Le briofite sono piante senza
+                vasi conduttori, cioè non hanno strutture come il xilema e il floema per trasportare acqua e nutrienti;
+                vivono in ambienti umidi, dove possono assorbire l’acqua direttamente dalla superficie. Non producono
+                semi e si riproducono con spore. Esempi sono i muschi. Le tracheofite, o piante vascolari, hanno un
+                sistema di vasi conduttori (xilema e floema) che permette di trasportare acqua, sali minerali e zuccheri
+                in tutta la pianta. Questo le rende più grandi e più adattabili a diversi ambienti. Si dividono in:
+                Pteridofite: piante senza semi che si riproducono con spore, come le felci.Spermatofite: piante con
+                semi, divise a loro volta in: Gimnosperme: producono semi nudi, come i pini.Angiosperme: producono semi
+                protetti dai frutti, come il melo o la rosa.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere le tappe dell´evoluzione delle specie vegetali, dalla vita
+                acquatica alla comparsa delle angiosperme</div>
+            <div class="answer">L’evoluzione delle piante è passata dall’acqua alla terra, sviluppando progressivamente
+                strutture più complesse come vasi conduttori, semi, fiori e frutti per adattarsi meglio all’ambiente
+                terrestre. Le prime piante erano alghe verdi che vivevano in acqua. Erano organismi semplici senza
+                radici, foglie o tessuti specializzati. Circa 500 milioni di anni fa, alcune piante iniziarono a
+                colonizzare la terraferma. Per sopravvivere fuori dall’acqua, svilupparono cuticole (uno strato ceroso
+                per evitare la perdita d’acqua) e stomi (piccole aperture per lo scambio di gas). Le briofite, come i
+                muschi, sono le piante più antiche che vivono sulla terra. Con il tempo, le piante svilupparono tessuti
+                specializzati per trasportare acqua e nutrienti, chiamati xilema e floema. Questo permise loro di
+                crescere più alte e più grandi. Le prime piante vascolari furono le pteridofite, come le felci. Circa
+                360 milioni di anni fa, comparvero le prime piante con semi, che offrivano un modo più sicuro per
+                proteggere e disperdere gli embrioni. Le prime piante con semi furono le gimnosperme, come i pini e gli
+                abeti, che producevano semi nudi. Infine, circa 140 milioni di anni fa, apparvero le angiosperme, le
+                piante con fiori e frutti. I fiori attiravano gli insetti per l’impollinazione, mentre i frutti
+                proteggevano i semi e aiutavano nella loro dispersione. Oggi, le angiosperme sono il gruppo più diffuso
+                di piante terrestri.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere la classificazione delle alghe.</div>
+            <div class="answer">Le alghe sono organismi fotoautotrofi che abitano le acque salate o dolci e alcuni
+                ambienti terrestri. In base alle dimensioni sono classificate in "microalghe" unicellulari e
+                "macroalghe" multicellulari. Le microalghe sono solitarie o formano colonie, vivono sospese in acqua
+                (fitoplancton) o fissate a un substrato (microfitobenthos). Le colonie sono aggregati di cellule che non
+                comunicano nè svolgono funzioni utili allealtre cellule e sono inglobate in mucillaggini o guaine. I
+                "cenobi" sono colonie più evolute che sono unite da filamenti citoplasmatici e possono svolgere
+                funzioni. Alcune colonie assumono forme fogliacee o arborescenti. Le cellule possono essere immobili
+                (coccali) o mobili (flagellate, ameboidi). Le macroalghe colonizzano coste rocciose (macrofitobenthos) e
+                raggiungono dimensioni fino a 60-70 metri di altezza (genere Macrocystis). Il loro corpo è detto
+                "tallo", definite tallofite. Questo ha struttura filamentosa, parenchimatica o cenocitica (con più
+                nuclei, anche migliaia, all'interno della stessa parete, un unico protoplasma), non ha organi ma le
+                alghe possono possedere "filloidi" dall'aspetto di foglie, "cauloidi" di fusti, "rizoidi" di radici.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere la cellula delle alghe unicellulari.</div>
+            <div class="answer">La cellula delle alghe unicellulari è un'unità molto semplice e specializzata per la
+                fotosintesi, che permette loro di produrre energia utilizzando la luce solare. Membrana cellulare:
+                Avvolge e protegge la cellula, regolando gli scambi con l'ambiente esterno. Parete cellulare: In molte
+                alghe, è presente una parete rigida che dà forma e supporto, composta spesso da cellulosa o silicio.
+                Cloroplasti: Sono gli organelli dove avviene la fotosintesi. Contengono pigmenti come la clorofilla, che
+                cattura la luce solare. Nucleo: Contiene il materiale genetico (DNA) che controlla le attività della
+                cellula. Citoplasma: Una sostanza gelatinosa che contiene gli organelli e permette le reazioni chimiche.
+                Vacuoli: Spazi pieni di liquido che aiutano a immagazzinare sostanze o a regolare l'equilibrio
+                dell'acqua. Flagelli (in alcune alghe): Sono strutture simili a fruste che permettono alla cellula di
+                muoversi nell'acqua.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere la classificazione e i caratteri generali delle briofite.
+            </div>
+            <div class="answer">Le briofite sono un gruppo di piante che vivono in ambienti umidi e ombrosi. Sono
+                considerate tra le piante più primitive e si classificano in tre principali categorie: Muschi
+                (Bryophyta): piante con strutture fogliari sottili disposte a spirale intorno a un piccolo fusto.
+                Epatiche (Marchantiophyta): piante con corpi piatti e ramificati, che assomigliano a fegati. Antocerote
+                (Anthocerotophyta): piante simili alle epatiche, ma con sporofiti allungati a forma di corno. Caratteri
+                generali: Dimensioni ridotte; vivono in Ambienti umidi; Assenza di tessuti vascolari: non hanno xilema e
+                floema, assorbono acqua e nutrienti direttamente dalla superficie. Riproduzione alternata: hanno un
+                ciclo vitale con alternanza di due fasi: Gametofito (fase dominante): la pianta visibile, verde e
+                fotosintetica. Sporofito (fase dipendente): una struttura più piccola che cresce sul gametofito e
+                produce spore. Ancoraggio: sono fissate al terreno tramite rizoidi, strutture simili a radici ma
+                incapaci di assorbire nutrienti. Le briofite sono fondamentali per gli ecosistemi.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere il ciclo vitale dei muschi.</div>
+            <div class="answer">Il ciclo vitale dei muschi è caratterizzato da un'alternanza di due fasi: gametofito e
+                sporofito. Gametofito: Il gametofito produce gameti (cellule riproduttive) nei suoi organi sessuali:
+                Anteridi: producono gameti maschili (spermatozoi). Archegoni: contengono i gameti femminili (cellule
+                uovo). Gli spermatozoi nuotano nell'acqua (necessaria per la riproduzione) per raggiungere le cellule
+                uovo negli archegoni. Fase dello sporofito: Dopo la fecondazione, si forma uno zigote che si sviluppa in
+                uno sporofito, che cresce sopra il gametofito. Lo sporofito è una struttura sottile composta da:Un piede
+                (che lo ancora al gametofito).Uno stelo (seta). Una capsula (sporangio), che produce spore. Nella
+                capsula, le cellule subiscono meiosi, producendo spore aploidi (con metà del DNA). Le spore vengono
+                rilasciate nell'ambiente e, se trovano condizioni favorevoli (umidità), germinano formando un protonema
+                (una struttura filamentosa). Dal protonema si sviluppa un nuovo gametofito, e il ciclo ricomincia.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere la classificazione delle piante vascolari.</div>
+            <div class="answer">Le piante vascolari (o tracheofite) sono piante che possiedono tessuti specializzati,
+                come xilema e floema, per trasportare acqua, nutrienti e sostanze organiche. Si classificano in due
+                grandi gruppi principali: piante senza semi e piante con semi. Piante vascolari senza semi (Pteridofite)
+                comprendono felci, equiseti e licopodi. Si riproducono tramite spore, non producono semi. Vivono in
+                ambienti umidi perché la riproduzione richiede acqua (gli spermatozoi devono nuotare fino all’ovulo).
+                Hanno foglie semplici o composte, fusti e radici. Piante vascolari con semi (Spermatofite) si dividono
+                in due sottogruppi principali: a. Gimnosperme (semi "nudi") I semi non sono protetti da un frutto.
+                Comprendono conifere (pini, abeti), ginkgo, cicadi e gnetofite. Producono semi all’interno di strutture
+                chiamate coni o strobili. Di solito hanno foglie aghiformi e vivono in ambienti diversi, anche freddi e
+                aridi. b. Angiosperme (semi "protetti") I semi sono racchiusi in un frutto. Sono il gruppo più grande e
+                diversificato di piante. Producono fiori, che servono per la riproduzione. Si dividono ulteriormente in:
+                Monocotiledoni: una sola foglia embrionale (cotiledone), foglie parallelinervie (es. grano, erba).
+                Dicotiledoni: due foglie embrionali, foglie con nervature ramificate (es. rose, querce).</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere il genere Rhynia.</div>
+            <div class="answer">Il genere Rhynia è un gruppo di piante estinte molto antiche, vissute circa 400 milioni
+                di anni fa. È importante perché rappresenta uno dei primi esempi di piante vascolari (cioè piante con
+                tessuti per trasportare acqua e nutrienti), fondamentali nell'evoluzione del regno vegetale. Prive di
+                radici, sono provviste di sottili rizoidi collocati su rizomi orizzontali, lo sporofito consiste di un
+                fusto ramificato per lo più dicotomicamente, con sporangi in posizione terminale, foglie assenti o
+                piccole tipo microfilli.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere i caratteri generali delle pteridofite.</div>
+            <div class="answer">Le pteridofite sono un gruppo di piante vascolari senza semi, come le felci, gli
+                equiseti e i licopodi. Sono tra le piante terrestri più antiche e mostrano alcune caratteristiche
+                avanzate rispetto alle piante più primitive, come le briofite. Possiedono xilema e floema; Si
+                riproducono tramite spore anziché semi; hanno radici, fusti e foglie; vivono in zone umide; Variano da
+                specie piccole a felci arboree alte diversi metri. Sono fondamentali per gli ecosistemi, contribuendo al
+                ciclo del carbonio e fornendo habitat. Alcune specie di pteridofite (come le felci) sono utilizzate come
+                ornamentali o nella medicina tradizionale.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere le caratteristiche morfologiche generali delle "conifere".
+            </div>
+            <div class="answer">Le conifere sono piante appartenenti al gruppo delle Gimnosperme, caratterizzate
+                principalmente da foglie aghiformi o squamiformi, semi non racchiusi in frutti (ma presenti in strutture
+                chiamate coni o strobili) e adattamenti per resistere a climi freddi o aridi. Sono generalmente alberi o
+                arbusti sempreverdi, con radici profonde e tronchi robusti. La corteccia è spesso spessa e protettiva.
+                La loro chioma può essere conica, cilindrica o irregolare, a seconda della specie. I coni maschili
+                producono il polline, mentre quelli femminili contengono i semi. Crescono principalmente in aree
+                temperate e boreali.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere i caratteri identificativi delle angiosperme</div>
+            <div class="answer">Le angiosperme sono piante vascolari caratterizzate dalla presenza di fiori e semi
+                racchiusi nei frutti. Ecco i loro caratteri distintivi principali: Fiori: Organi riproduttivi
+                specializzati che contengono strutture come sepali, petali, stami (organi maschili) e carpelli (organi
+                femminili). Frutti: Derivano dall'ovario del fiore e proteggono i semi. Consentono la dispersione
+                tramite vari agenti (vento, animali, acqua). Semi: Racchiusi all'interno del frutto, dotati di un
+                embrione, riserve nutritive (cotiledoni) e una copertura protettiva. Foglie: Generalmente appiattite,
+                con una grande varietà di forme e dimensioni, spesso con nervature ramificate. Sistema vascolare: Ben
+                sviluppato, con xilema (per il trasporto di acqua) e floema (per il trasporto di sostanze nutritive).
+                Presentano vasi conduttori più avanzati rispetto alle Gimnosperme. Crescita: Possono essere erbacee,
+                arbustive o arboree. Sono presenti in quasi tutti gli habitat, dai deserti alle foreste tropicali.
+                Riproduzione: Avviene principalmente tramite impollinazione (da insetti, vento, acqua o altri agenti) e
+                successiva fecondazione doppia, che è esclusiva delle Angiosperme. Diversità: Sono il gruppo di piante
+                più variegato, con oltre 300.000 specie conosciute. Si dividono principalmente in due gruppi:
+                Monocotiledoni (es. graminacee, orchidee) e Dicotiledoni (es. rose, querce).</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere la specie raffigurata: foglia, radice, fusto, frutto e seme.
+            </div>
+            <div class="answer">L' immagine raffigura una graminacea. Foglia:forma allungata, stretta e laminare con
+                margini paralleli. Radice: fascicolata, con numerose radichette che si sviluppano a partire dalla base
+                del fusto. Fusto: cavo e nodoso (culmo) che si sviluppa in modo eretto. Frutto: è cariosside, un frutto
+                secco e indeiscente in cui il seme è intimamente aderente alla parete del frutto. Seme: contenuto all'
+                interno del cariosside. L'embrione ha un unico cotiledone, lo scutello, che contiene sostanze di
+                riserva, soprattutto grassi e proteine. L'impollinazione è anemofila.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere i caratteri morfologici delle specie appartenenti alla
+                famiglia delle graminacee.</div>
+            <div class="answer">Le Graminacee sono una famiglia di piante erbacee, spesso dominanti in praterie, savane
+                e aree coltivate (come cereali). Ecco i principali caratteri morfologici: Fusto: Detto culmo, è
+                cilindrico, cavo internamente (a eccezione dei nodi, che sono solidi) e spesso articolato in segmenti.
+                Foglie: Sono allungate, strette e parallelinervie. Si sviluppano alternandosi lungo il culmo e sono
+                formate da:Guaina: Avvolge il culmo.Lamina: La parte piatta e allargata della foglia.Ligula: Piccola
+                membrana o frangia posta tra guaina e lamina. Radici: Fascicolate, spesso senza una radice principale
+                dominante. Infiorescenze: Costituite da spighette, che sono strutture composte da piccoli fiori (detti
+                florets). Le spighette sono spesso raggruppate in pannocchie, spighe o racemi. Fiori: Piccoli, privi di
+                petali vistosi (anemofili, cioè impollinati dal vento). Sono protetti da brattee chiamate glume e
+                glumette. Frutto: È un cariosside, un tipo di frutto secco indeiscente in cui il seme è fuso con il
+                pericarpo (es. chicchi di grano, riso o mais).</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere i caratteri morfologici delle specie appartenenti alla
+                famiglia delle fagaceae.</div>
+            <div class="answer">Le Fagaceae sono una famiglia di piante legnose, che include alberi e arbusti come
+                querce, faggi e castagni. Fusto: Sono piante perenni con tronchi robusti e corteccia che può essere
+                liscia (nei giovani) o rugosa e fessurata negli esemplari maturi. Foglie: Semplici e alternate.Margine
+                spesso dentato, lobato o intero, a seconda della specie.Persistenti (sempreverdi) o caduche (decidue) in
+                base al clima. Fiori: Unisessuali e monoici (fiori maschili e femminili sulla stessa pianta).I fiori
+                maschili sono piccoli e riuniti in amenti penduli.I fiori femminili sono solitari o in piccoli gruppi e
+                si sviluppano vicino ai rami. Frutti:Sono acheni (chiamati ghiande o castagne), protetti parzialmente o
+                totalmente da una cupola legnosa o spinosa (cupola o riccio).Radici: Ben sviluppate e profonde, con
+                capacità di formare simbiosi micorriziche che aiutano l'assorbimento dei nutrienti. Habitat: Crescono
+                principalmente in climi temperati e sono importanti componenti delle foreste.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere i caratteri morfologici delle specie appartenenti alla
+                famiglia delle rosacee.</div>
+            <div class="answer">Le Rosaceae sono una famiglia di piante molto diversificata, che comprende alberi,
+                arbusti ed erbacee, famose per i loro fiori e frutti. Fusto:Può essere legnoso (come in meli, peri e
+                rose) o erbaceo. Alcune specie hanno rami con spine o aculei (es. rosa e prugnolo). Foglie: Semplici o
+                composte, sempre alternate.Margine spesso seghettato.Presenza frequente di stipole (piccole foglioline
+                alla base del picciolo).Fiori:Solitamente attinomorfi (simmetrici radialmente) e molto
+                appariscenti.Composti da 5 petali, 5 sepali e numerosi stami.Sono spesso ermafroditi (contengono organi
+                maschili e femminili) e raggruppati in infiorescenze o solitari. Frutti:Grande varietà: possono essere
+                pomi (es. mela, pera), drupe (es. ciliegia, prugna), cinorrodi (es. rosa canina) o frutti aggregati (es.
+                lampone, fragola). Spesso commestibili e utilizzati in alimentazione.Radici: Ben sviluppate, spesso
+                superficiali, in grado di sostenere la pianta anche in suoli poco profondi. Habitat:Crescono in ambienti
+                temperati, sia spontaneamente sia come specie coltivate. Le grandi differenze nella famiglia,
+                riguardanti la morfologia fiorale, suddividono le sottofamiglie: Rosoidee (fragola, rosa, lampone),
+                Spiraeoideae (Spirea), Maloideae o Pomoideae (biancospino, pero), Prunoideae (pesco, ciliegio),
+                pittosporideae (pittosporo). Il frutto è una drupa (Prunoideae) o un falso frutto (pomo nelle
+                Maloideae).</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere i caratteri morfologici delle specie appartenenti alla
+                famiglia delle leguminose.</div>
+            <div class="answer">Le Leguminose (o Fabaceae) sono una famiglia di piante comprendente specie erbacee,
+                arbustive e arboree, conosciute per i loro frutti caratteristici e la capacità di fissare l'azoto nel
+                suolo.Fusto:Può essere erbaceo (es. fagioli, piselli), legnoso (es. robinia) o rampicante.In alcune
+                specie sono presenti spine (es. ginestra).Foglie:Generalmente composte (pennate o palmate) e disposte in
+                modo alterno.Spesso accompagnate da stipole alla base.Alcune specie hanno foglie trasformate in viticci
+                per arrampicarsi (es. pisello).Fiori:Solitamente zigomorfi (simmetrici solo su un asse) e a forma di
+                farfalla, con una struttura detta papilionacea: un petalo superiore (vessillo), due laterali (ali) e due
+                inferiori fusi (carena).Sono spesso riuniti in infiorescenze a grappolo.Frutti:Sono tipicamente legumi,
+                cioè frutti secchi che si aprono lungo due linee per rilasciare i semi (es. fagioli, lenticchie,
+                ceci).In alcune specie, i legumi possono essere carnosi o indeiscenti.Radici:Spesso presentano noduli
+                contenenti batteri azotofissatori (genere Rhizobium), che arricchiscono il terreno di
+                azoto.Habitat:Crescono in ambienti molto vari, dai tropici ai climi temperati.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere i tipi di interazioni tra specie vegetali.</div>
+            <div class="answer">Le interazioni tra specie vegetali possono essere di vari tipi e influenzano la
+                crescita, la sopravvivenza e la riproduzione delle piante.I principali tipi:Competizione: Quando due o
+                più specie vegetali competono per risorse limitate come luce, acqua, spazio o nutrienti. Allelopatia:Una
+                pianta rilascia sostanze chimiche nel terreno o nell'aria che inibiscono o favoriscono la crescita di
+                altre specie. Facilitazione:Una specie aiuta un'altra a sopravvivere o crescere. Parassitismo:Una pianta
+                trae beneficio a spese di un'altra. Mutualismo:Due specie traggono beneficio dall'interazione.
+                Neutralismo:Due specie coesistono nello stesso ambiente senza influenzarsi reciprocamente in modo
+                significativo.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere la differenza tra areale e corotipo.</div>
+            <div class="answer">L’areale geografico è la zona entro cui si trova distribuita una determinata specie
+                vegetale. Carotipo rappresenta un modello generale di distribuzione che accomuna più specie con areali
+                simili.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere la vegetazione di tre biomi a scelta.</div>
+            <div class="answer"></div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere la morfologia di una specie vegetale di importanza
+                commerciale: utillizzo, portamento, foglia, fiore, frutto.</div>
+            <div class="answer">Olea europaea (Olivo) è una pianta di grande valore economico per la produzione di olive
+                e olio d'oliva e uno dei prodotti alimentari più importanti mondo. L'olio d'oliva è utilizzato in
+                cucina, cosmetica e industria farmaceutica, mentre le olive possono essere consumate direttamente (in
+                salamoia) o trasformate.Portamento:L'olivo è un albero sempreverde che può raggiungere un'altezza di
+                5-10 metri. Ha un tronco robusto e spesso contorto, con una corteccia grigiastra e rugosa. La chioma è
+                densa e globosa.Foglia:Le foglie sono semplici, opposte, lanceolate e coriacee. La superficie superiore
+                è verde scuro e lucida, mentre quella inferiore è argentata e opaca, adattamento che riduce la perdita
+                d'acqua. Fiore:I fiori sono piccoli, ermafroditi o maschili, di colore bianco crema, riuniti in
+                infiorescenze a grappolo (mignole).Frutto:è una drupa ovale, inizialmente verde e poi, a maturazione, si
+                scurisce. Contiene un nocciolo legnoso che racchiude il seme.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-F">Foresta pluviale tropicale:Vegetazione densa e stratificata con alberi
+                sempreverdi alti, liane, felci e muschi. Le piante hanno foglie grandi e cerose per trattenere
+                l'umidità. 2. Savana tropicale:Erbe alte e alberi sparsi come acacie e baobab. Adattata a siccità e
+                piogge stagionali, con radici profonde e foglie che riducono la perdita d'acqua. 3. Taiga:Dominata da
+                conifere resistenti al freddo, come pini e abeti, con aghi cerosi. Il sottobosco è povero, composto da
+                muschi, licheni e arbusti bassi.</div>
+            <div class="answer"></div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">I trasposoni in pianta</div>
+            <div class="answer">I trasposoni sono elementi genetici mobili presenti nel DNA delle piante, capaci di
+                spostarsi da una posizione all’altra nel genoma. Questi elementi possono essere classificati in
+                trasposoni a DNA e retrotrasposoni, a seconda del meccanismo di trasposizione (diretto o tramite RNA).
+                Nei genomi vegetali, i trasposoni svolgono un ruolo importante nell’evoluzione, generando variabilità
+                genetica e influenzando l’espressione genica. Esempi noti sono i trasposoni scoperti nel mais da Barbara
+                McClintock, che regolano la colorazione dei semi. Sebbene possano avere effetti dannosi, spesso
+                contribuiscono all’adattamento delle piante.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">I tessuti fondamentali della pianta adulta</div>
+            <div class="answer">I tessuti fondamentali della pianta adulta sono il parenchima, il collenchima e lo
+                sclerenchima. Il parenchima è formato da cellule vive con pareti sottili, coinvolte nella fotosintesi,
+                riserva e rigenerazione. Il collenchima è costituito da cellule vive con pareti ispessite in modo
+                irregolare, che forniscono supporto alle parti in crescita. Lo sclerenchima, formato da cellule morte
+                con pareti lignificate, offre sostegno meccanico alle strutture mature della pianta, come fibre e
+                sclereidi. Questi tessuti lavorano insieme per garantire sostegno, crescita e funzioni metaboliche.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">I meristemi secondari della pianta</div>
+            <div class="answer">I meristemi secondari sono tessuti vegetali responsabili della crescita in spessore
+                della pianta. I principali sono il cambio vascolare e il fellogeno. Il cambio vascolare produce xilema
+                secondario (legno) verso l’interno e floema secondario verso l’esterno, contribuendo alla formazione del
+                tronco nelle piante legnose. Il fellogeno, o cambio suberoso, forma il sughero (felloderma e suberina)
+                per proteggere la pianta. Questi meristemi derivano da cellule adulte che riprendono l’attività
+                mitotica, permettendo la crescita secondaria.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">I tessuti secretori della pianta</div>
+            <div class="answer">I tessuti secretori delle piante sono specializzati nella produzione e rilascio di
+                sostanze. Si dividono in secretori esterni e interni. I tessuti secretori esterni includono ghiandole,
+                tricomi ghiandolari e nettari, che rilasciano sostanze come resine, oli essenziali e nettare per
+                protezione o attrazione di impollinatori. I tessuti secretori interni comprendono canali resiniferi,
+                laticiferi e tasche secretorie, che immagazzinano sostanze come lattice, oli e gomme all’interno della
+                pianta. Questi tessuti svolgono funzioni protettive, attrattive e di difesa contro erbivori e patogeni.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">Il fenomeno della dominanza apicale</div>
+            <div class="answer">Il fenomeno della dominanza apicale si verifica quando la crescita del germoglio apicale
+                inibisce lo sviluppo delle gemme laterali lungo il fusto quindi nella regione prossima all'apice non si
+                originano molti rami e questi non sono molto sviluppati. È regolato da ormoni vegetali, principalmente
+                l’auxina, prodotta nell’apice, che si distribuisce verso il basso e sopprime l’attività delle gemme
+                ascellari. Questo fenomeno favorisce una crescita verticale, consentendo alla pianta di competere per la
+                luce. Quando l’apice viene rimosso (potatura), la concentrazione di auxina diminuisce, stimolando la
+                crescita delle gemme laterali e portando a una maggiore ramificazione. Troviamo due tipi di
+                ramificazione: - monopodiale, tipica delle conifere, con un asse principale dal quale si originano rami
+                primari; gli assi laterali possono restare più corti rispetto al principale ed essergli subordinati; -
+                simpodiale, degli alberi a chioma ramificata nei quali le gemme al di sotto di quella apicale originano
+                rami primari che a loro volta originano rami secondari e così via.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">La parete della cellula vegetale: morfologia, composizione e funzioni
+            </div>
+            <div class="answer">La parete vegetale si trova nelle cellule vegetali, funghi e batteri. E' una struttura
+                rigida che circonda la membrana plasmatica. È composta principalmente da cellulosa, emicellulose,
+                pectine e, in alcune cellule, lignina. La sua funzione principale è fornire sostegno meccanico alla
+                cellula, mantenendone la forma. Inoltre, regola lo scambio di sostanze, protegge da patogeni e
+                contribuisce alla comunicazione cellulare attraverso plasmodesmi. La parete è dinamica, permettendo la
+                crescita e l’adattamento della cellula alle condizioni ambientali.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">La poliploidia nella pianta: definizione ed esempi di specie poliploidi
+            </div>
+            <div class="answer">La poliploidia è una condizione in cui una pianta possiede più di due set completi di
+                cromosomi (es. triploidi, tetraploidi). Può derivare da errori nella divisione cellulare o dalla fusione
+                di gameti non ridotti. La poliploidia spesso conferisce vantaggi come maggiore vigore, resistenza e
+                adattabilità. Esempi di piante poliploidi includono il frumento (esaploide, 6n), la fragola (octoploide,
+                8n) e alcune varietà di banane (triploidi, 3n). Questo fenomeno è comune in molte specie coltivate e
+                sfruttato per migliorare caratteristiche agronomiche.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">La nervatura della foglia: funzione, anatomia, morfologia</div>
+            <div class="answer">La foglia è l'organo principale delle piante vascolari responsabile della fotosintesi,
+                della respirazione e della traspirazione. La nervatura della foglia ha la funzione di trasportare acqua,
+                sali minerali e nutrienti organici attraverso i tessuti vascolari (xilema e floema), oltre a fornire
+                supporto strutturale alla lamina fogliare. Anatomicamente, le nervature contengono fasci vascolari, con
+                lo xilema orientato verso la superficie superiore della foglia e il floema verso quella inferiore,
+                circondati da un tessuto di protezione. Morfologicamente, possono essere parallele, tipiche delle
+                monocotiledoni (es. grano), o reticolate, comuni nelle dicotiledoni (es. quercia), con una nervatura
+                principale da cui si diramano quelle secondarie.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">La fotosintesi: luogo e processo/reazione</div>
+            <div class="answer">La fotosintesi avviene nei cloroplasti, principalmente nelle cellule del mesofillo delle
+                foglie. È un processo che converte l’energia luminosa in energia chimica, producendo glucosio e
+                ossigeno. Si divide in due fasi: la fase luminosa, che avviene nei tilacoidi, utilizza la luce per
+                scindere l’acqua (fotolisi), producendo ossigeno, ATP e NADPH; e il ciclo di Calvin, che avviene nello
+                stroma, dove la CO₂ viene fissata e, grazie ad ATP e NADPH, convertita in glucosio. La reazione
+                complessiva è: 6CO₂ + 6H₂O + luce → C₆H₁₂O₆ + 6O₂.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">La tessitura del terreno dipende dalla sua composizione in:</div>
+            <div class="answer"></div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-M">Modificazioni della parete vegetale</div>
+            <div class="answer">La parete vegetale subisce modificazioni come la lignificazione, che la rinforza con
+                lignina per il sostegno, e la suberificazione, che la impermeabilizza con suberina, come nel sughero. La
+                cutinizzazione protegge dalla perdita d’acqua tramite cutina. Altre modifiche includono la gelificazione
+                e la mineralizzazione, che migliorano la resistenza e le proprietà meccaniche, adattando la pianta a
+                stress ambientali.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-O">Osserva la figura e ipotizza il tipo di fotosintesi svolto dalla
+                pianta:C3, C4 o CAM? Descrivi gli elementi che costituiscono la foglia nominando le parti dalle lettere
+                (A-F).</div>
+            <div class="answer">Pianta C4. Meccanismo fotosintesi ossalacetato. A epidermide superiore, B epidermide
+                inferiore, C xilema, D floema, E cellule del mesofillo, F stoma.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-O">Osserva le figure. Quale specie è una angiosperma?</div>
+            <div class="answer">Pianta grande con fiori</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quale specie appartiene alla famiglia delle graminaceae? La pannocchia
+            </div>
+            <div class="answer"></div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Quali fattori ambientali influenzano lo sviluppo della pianta? Come si
+                evolvono le piante in risposta a questi fattori?</div>
+            <div class="answer">Luce, Temperatura, Acqua, Nutrienti del suolo,Vento, Altitudine e pressione
+                atmosferica,Interazioni biotiche. Evoluzione delle piante in risposta ai fattori: Adattamenti fogliari:
+                Foglie più ampie in ambienti ombrosi, aghi in climi freddi o secchi. Sistemi radicali: Radici profonde
+                in ambienti aridi, radici superficiali nelle foreste pluviali per sfruttare nutrienti di superficie.
+                Riproduzione: Semi con rivestimenti spessi in ambienti secchi o dispersi dal vento in zone aperte.
+                Crescita strutturale: Tronchi robusti e bassi in aree ventose, tessuti spugnosi per galleggiare in
+                piante acquatiche. Ciclo vitale: Fasi di dormienza per resistere a periodi sfavorevoli, come l'inverno o
+                la siccità.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-S">Spiegare il significato di "tallofita" e "cormofita", facendo anche
+                degli esempi.</div>
+            <div class="answer">Le tallofite sono piante con un corpo semplice, chiamato tallo, privo di
+                differenziazione in radici, fusto e foglie. Queste piante assorbono acqua e nutrienti direttamente
+                attraverso la superficie del tallo. Esempi di tallofite includono alghe, funghi e licheni. Le cormofite,
+                invece, sono piante con un corpo organizzato in cormo, costituito da radici, fusto e foglie ben
+                distinti, con tessuti vascolari per il trasporto di acqua e nutrienti. Esempi di cormofite sono le
+                felci, le gimnosperme (es. pino) e le angiosperme (es. quercia). La distinzione riflette un’evoluzione
+                strutturale verso una maggiore complessità.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-S">Stereoma, idroma e leptoma sono presenti in:</div>
+            <div class="answer">felci briofite spore polline</div>
+        </div>
+
+
+
+        <!-- Aggiungi qui le altre risposte -->
+    </div>
+
+    <!-- Pulsante per tornare alla Index -->
+    <button id="back-button">C</button>
+
+    <!-- Barra di Ricerca a Scomparsa nell'Angolo in Basso a Destra -->
+    <div class="search-bar-container">
+        <button id="search-toggle">&#128269;</button>
+        <div id="search-bar" class="hidden">
+            <input type="text" id="search-input" placeholder="Cerca una risposta...">
+        </div>
+    </div>
+
+    <script>
+        // Toggle visibilità della barra di ricerca
+        document.getElementById('search-toggle').addEventListener('click', function () {
+            const searchBar = document.getElementById('search-bar');
+            searchBar.classList.toggle('hidden');
+        });
+
+        // Funzionalità di ricerca
+        document.getElementById('search-input').addEventListener('input', function () {
+            const searchQuery = this.value.toLowerCase();
+            const answerItems = document.querySelectorAll('.answer-item');
+
+            answerItems.forEach(item => {
+                const answerText = item.innerText.toLowerCase();
+
+                if (answerText.includes(searchQuery)) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        });
+
+        // Pulsante per tornare alla Index
+        document.getElementById('back-button').addEventListener('click', function () {
+            window.location.href = 'index.html';
+        });
+
+        // Assegna automaticamente gli ID alle risposte (opzionale)
+        (function () {
+            const answerItems = document.querySelectorAll('.answer-item');
+            const lettersFound = {};
+
+            answerItems.forEach(answer => {
+                const firstLetter = answer.innerText.trim().charAt(0).toUpperCase();
+                if (!lettersFound[firstLetter]) {
+                    lettersFound[firstLetter] = true;
+                    answer.id = 'letter-' + firstLetter;
+                }
+            });
+        })();
+    </script>
+
+</body>
+
+</html>
