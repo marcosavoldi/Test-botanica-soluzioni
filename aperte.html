@@ -6,242 +6,256 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elenco Risposte</title>
     <style>
-       /* ===========================
+        /* ===========================
    Variabili CSS
 =========================== */
-:root {
-    --primary-color: #0073e6;         /* Blu navbar, pulsanti, ecc. */
-    --secondary-color: #fff;          /* Bianco */
-    --background-color: #f4f4f4;      /* Sfondo generale pagina */
-    --text-color: #333;               /* Testo principale */
-    --font-family: Arial, sans-serif;
-    --max-width: 800px;
-    --border-radius: 5px;
-    --padding: 1rem;
-    --font-size-base: 1rem;
-    --line-height-base: 1.5;
+        :root {
+            --primary-color: #0073e6;
+            /* Blu navbar, pulsanti, ecc. */
+            --secondary-color: #fff;
+            /* Bianco */
+            --background-color: #f4f4f4;
+            /* Sfondo generale pagina */
+            --text-color: #333;
+            /* Testo principale */
+            --font-family: Arial, sans-serif;
+            --max-width: 800px;
+            --border-radius: 5px;
+            --padding: 1rem;
+            --font-size-base: 1rem;
+            --line-height-base: 1.5;
 
-    /* Colori e font per question/answer */
-    --question-bg-color: #0073e6;     /* Sfondo blu per la domanda */
-    --question-text-color: #fff;      /* Testo bianco per la domanda */
-    --question-font-size: 1.2rem;
+            /* Colori e font per question/answer */
+            --question-bg-color: #0073e6;
+            /* Sfondo blu per la domanda */
+            --question-text-color: #fff;
+            /* Testo bianco per la domanda */
+            --question-font-size: 1.2rem;
 
-    --answer-bg-color: #fff;          /* Sfondo bianco per la risposta */
-    --answer-text-color: #333;        /* Testo nero per la risposta */
-    --answer-font-weight: bold;
-    --answer-font-size: 1.2rem;
-}
+            --answer-bg-color: #fff;
+            /* Sfondo bianco per la risposta */
+            --answer-text-color: #333;
+            /* Testo nero per la risposta */
+            --answer-font-weight: bold;
+            --answer-font-size: 1.2rem;
+        }
 
-/* ===========================
+        /* ===========================
    Stili Globali
 =========================== */
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-}
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
 
-body {
-    font-family: var(--font-family);
-    background-color: var(--background-color);
-    margin: 0;
-    padding-top: 70px; /* lascia spazio per la navbar fissa */
-    font-size: var(--font-size-base);
-    line-height: var(--line-height-base);
-}
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            margin: 0;
+            padding-top: 70px;
+            /* lascia spazio per la navbar fissa */
+            font-size: var(--font-size-base);
+            line-height: var(--line-height-base);
+        }
 
-h1 {
-    text-align: center;
-    color: var(--text-color);
-    font-size: 1.8rem;
-    margin: 0 0 1rem 0;
-    font-weight: bold;
-}
+        h1 {
+            text-align: center;
+            color: var(--text-color);
+            font-size: 1.8rem;
+            margin: 0 0 1rem 0;
+            font-weight: bold;
+        }
 
-/* ===========================
+        /* ===========================
    Barra di Navigazione Alfabetica
 =========================== */
-.alphabet-nav {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    background-color: var(--primary-color);
-    padding: 0.5rem;
-    text-align: center;
-    z-index: 1000;
-}
+        .alphabet-nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: var(--primary-color);
+            padding: 0.5rem;
+            text-align: center;
+            z-index: 1000;
+        }
 
-.alphabet-nav a {
-    color: var(--secondary-color);
-    margin: 0 0.5rem;
-    text-decoration: none;
-    font-weight: bold;
-}
+        .alphabet-nav a {
+            color: var(--secondary-color);
+            margin: 0 0.5rem;
+            text-decoration: none;
+            font-weight: bold;
+        }
 
-.alphabet-nav a:hover {
-    text-decoration: underline;
-}
+        .alphabet-nav a:hover {
+            text-decoration: underline;
+        }
 
-/* ===========================
+        /* ===========================
    Barra di Ricerca a Scomparsa
 =========================== */
-.search-bar-container {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
-}
+        .search-bar-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
 
-#search-toggle {
-    background-color: var(--primary-color);
-    color: var(--secondary-color);
-    border: none;
-    padding: 0.5rem;
-    font-size: 1.5rem;
-    border-radius: 50%;
-    cursor: pointer;
-}
+        #search-toggle {
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+            border: none;
+            padding: 0.5rem;
+            font-size: 1.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+        }
 
-#search-bar {
-    margin-top: 0.5rem;
-}
+        #search-bar {
+            margin-top: 0.5rem;
+        }
 
-#search-bar input[type="text"] {
-    width: 200px;
-    padding: 0.5rem;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: var(--border-radius);
-}
+        #search-bar input[type="text"] {
+            width: 200px;
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: var(--border-radius);
+        }
 
-.hidden {
-    display: none;
-}
+        .hidden {
+            display: none;
+        }
 
-/* ===========================
+        /* ===========================
    Pulsante per tornare alla Index (opzionale)
 =========================== */
-#back-button {
-    position: fixed;
-    bottom: 80px; /* Posizionato sopra il pulsante della lente */
-    right: 20px;
-    background-color: var(--primary-color);
-    color: var(--secondary-color);
-    border: none;
-    padding: 0.5rem;
-    font-size: 1.5rem;
-    border-radius: 50%;
-    cursor: pointer;
-    text-align: center;
-    line-height: 1;
-}
+        #back-button {
+            position: fixed;
+            bottom: 80px;
+            /* Posizionato sopra il pulsante della lente */
+            right: 20px;
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+            border: none;
+            padding: 0.5rem;
+            font-size: 1.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            text-align: center;
+            line-height: 1;
+            z-index: 2000;
+        }
 
-/* ===========================
+        /* ===========================
    Contenitore FAQ
 =========================== */
-.faq-container {
-    max-width: var(--max-width);
-    margin: 0 auto;
-    padding: 1rem;
-}
+        .faq-container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 1rem;
+        }
 
-/* 
+        /* 
    Ogni blocco di Domanda+Risposta.
    Se preferisci un bordo esterno comune, aggiungi qui border, background, ecc.
 */
-.faq-item {
-    margin-bottom: 1rem; /* Spazio tra una FAQ e l'altra */
-}
+        .faq-item {
+            margin-bottom: 1rem;
+            /* Spazio tra una FAQ e l'altra */
+        }
 
-/* ===========================
+        /* ===========================
    DOMANDA
    - Sottofondo blu e testo bianco
 =========================== */
-.question {
-    background-color: var(--question-bg-color);
-    color: var(--question-text-color);
-    font-size: var(--question-font-size);
-    padding: var(--padding);
-    border-radius: var(--border-radius) var(--border-radius) 0 0;
-    margin: 0; /* Rimuoviamo eventuali margin di default */
-    font-weight: bold;
-}
+        .question {
+            background-color: var(--question-bg-color);
+            color: var(--question-text-color);
+            font-size: var(--question-font-size);
+            padding: var(--padding);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            margin: 0;
+            /* Rimuoviamo eventuali margin di default */
+            font-weight: bold;
+        }
 
-/* ===========================
+        /* ===========================
    RISPOSTA
    - Sfondo bianco e testo nero
 =========================== */
-.answer {
-    background-color: var(--answer-bg-color);
-    color: var(--answer-text-color);
-    padding: var(--padding);
-    border-radius: 0 0 var(--border-radius) var(--border-radius);
-    border: 1px solid #ddd;
-    border-top: none; /* per unire visivamente con la domanda */
-    font-weight: var(--answer-font-weight);
-    font-size: var(--answer-font-size);
-    margin: 0; 
-}
+        .answer {
+            background-color: var(--answer-bg-color);
+            color: var(--answer-text-color);
+            padding: var(--padding);
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            border: 1px solid #ddd;
+            border-top: none;
+            /* per unire visivamente con la domanda */
+            font-weight: var(--answer-font-weight);
+            font-size: var(--answer-font-size);
+            margin: 0;
+        }
 
-/* ===========================
+        /* ===========================
    Responsive Design
 =========================== */
-@media (max-width: 768px) {
-    :root {
-        --font-size-base: 1.2rem;
-        --line-height-base: 1.6;
-        --padding: 1.5rem;
-        --answer-font-size: 1.4rem;
-        --question-font-size: 1.4rem;
-    }
+        @media (max-width: 768px) {
+            :root {
+                --font-size-base: 1.2rem;
+                --line-height-base: 1.6;
+                --padding: 1.5rem;
+                --answer-font-size: 1.4rem;
+                --question-font-size: 1.4rem;
+            }
 
-    h1 {
-        font-size: 2rem;
-    }
+            h1 {
+                font-size: 2rem;
+            }
 
-    #search-bar input[type="text"] {
-        font-size: 1.2rem;
-    }
-}
+            #search-bar input[type="text"] {
+                font-size: 1.2rem;
+            }
+        }
 
-@media (max-width: 480px) {
-    :root {
-        --font-size-base: 1.4rem;
-        --line-height-base: 1.7;
-        --padding: 1.5rem;
-        --answer-font-size: 1.6rem;
-        --question-font-size: 1.6rem;
-    }
+        @media (max-width: 480px) {
+            :root {
+                --font-size-base: 1.4rem;
+                --line-height-base: 1.7;
+                --padding: 1.5rem;
+                --answer-font-size: 1.6rem;
+                --question-font-size: 1.6rem;
+            }
 
-    h1 {
-        font-size: 2.2rem;
-    }
+            h1 {
+                font-size: 2.2rem;
+            }
 
-    #search-bar input[type="text"] {
-        font-size: 1.3rem;
-    }
-}
+            #search-bar input[type="text"] {
+                font-size: 1.3rem;
+            }
+        }
 
-/* ====================================
+        /* ====================================
    (Facoltativo) Se hai altri pulsanti
 ==================================== */
-.button-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-#button-a,
-#search-toggle {
-    background-color: var(--primary-color);
-    color: var(--secondary-color);
-    border: none;
-    padding: 0.5rem;
-    font-size: 1.5rem;
-    border-radius: 50%;
-    cursor: pointer;
-    margin-bottom: 10px;
-}
+        #button-a,
+        #search-toggle {
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+            border: none;
+            padding: 0.5rem;
+            font-size: 1.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 
@@ -280,6 +294,16 @@ h1 {
     <h1>Elenco Risposte</h1>
 
     <div class="answer-container" id="answer-container">
+
+        <div class="faq-item">
+            <div class="question" id="letter-1">1 Descrivi la foglia in figura:tipo, margine, lamina, nervature,... 2a
+                quale famiglia e 3 e quale genere appartiene la specie raffigurata?</div>
+            <div class="answer">La foglia è semplice, picciolata, con lamina ovata e con margine seghettato con
+                dentellature ben visibili lungo i bordi. Le nervature sono penninervie con una nervatura centrale da cui
+                partono nervature secondarie. La famiglia è quella delle Rosaceae. Il genere è il Prunus, specie Prunus
+                cerasus, nome comune del ciliegio.</div>
+        </div>
+
         <div class="faq-item">
             <div class="question" id="letter-1">1 Descrivere l'albero raffigurato: A la foglia, B il fiore, C il
                 frutto. 2 ipotizzare a quale famiglia potrebbe appartenere e giustificare la risposta.</div>
@@ -288,6 +312,14 @@ h1 {
                 sono raccolti in piccoli grappoli con forma arrotondati. Frutto:sono baccelli allungati e incurvati con
                 semi all' interno. Appartiene alla famiglia delle Fabaceae (o Leguminosae), per le foglie composte,
                 fiori a grappolo e frutto a baccello.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-1">1 Osserva la figura e ipotizza il tipo di fotosintesi svolto dalla
+                pianta:C3, C4 o CAM? 2 Descrivi gli elementi che costituiscono la foglia nominando le parti dalle
+                lettere (A-F).</div>
+            <div class="answer">Pianta C4. Meccanismo fotosintesi ossalacetato.A epidermide superiore, B epidermide
+                inferiore, C xilema, D floema, E cellule del mesofillo, F stoma.</div>
         </div>
 
         <div class="faq-item">
@@ -306,6 +338,11 @@ h1 {
                 prime due sono Fagaceae mentre la terza appartiene alla famiglia delle Betulaceae. La A
                 foglie:lanceolate con margini seghettati.Infiorescenze:amenti allungati.frutti:racchiusi in un involucro
                 chiamato "riccio" contenente i semi (le castagne).</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-C">Cosa indica il punto di domanda?</div>
+            <div class="answer">Stoma</div>
         </div>
 
         <div class="faq-item">
@@ -390,6 +427,16 @@ h1 {
                 distinguono dalla cellula animale. È dotata poi di un nucleo, che controlla le funzioni cellulari, e di
                 altri organelli come mitocondri, reticolo endoplasmatico e apparato di Golgi, simili alle cellule
                 animali, ma distintivi per la presenza di strutture legate alla funzione vegetale.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere la vegetazione di tre biomi a scelta.</div>
+            <div class="answer">1 Foresta pluviale tropicale:Vegetazione densa e stratificata con alberi sempreverdi
+                alti, liane, felci e muschi. Le piante hanno foglie grandi e cerose per trattenere l'umidità. 2 Savana
+                tropicale:Erbe alte e alberi sparsi come acacie e baobab. Adattata a siccità e piogge stagionali, con
+                radici profonde e foglie che riducono la perdita d'acqua. 3 Taiga:Dominata da conifere resistenti al
+                freddo, come pini e abeti, con aghi cerosi. Il sottobosco è povero, composto da muschi, licheni e
+                arbusti bassi.</div>
         </div>
 
         <div class="faq-item">
@@ -502,6 +549,15 @@ h1 {
         </div>
 
         <div class="faq-item">
+            <div class="question" id="letter-D">Descrivere la morfologia della foglia</div>
+            <div class="answer">Le foglie possono avere forme molto diverse, come lanceolate, ovali, a forma di cuore o
+                palmate, a seconda della specie di pianta. Una foglia è composta da diverse parti:Lamina: è la parte
+                piatta e verde della foglia, che serve per la fotosintesi.Picciolo: è il piccolo stelo che collega la
+                foglia al ramo o al tronco della pianta.Margine: è il bordo della foglia, che può essere liscio,
+                seghettato o ondulato.Nervature: sono le linee visibili sulla foglia</div>
+        </div>
+
+        <div class="faq-item">
             <div class="question" id="letter-D">Descrivere le caratteristiche delle cellule meristematiche.</div>
             <div class="answer">Le cellule meristematiche sono indifferenziate e altamente attive nella divisione
                 mitotica. Hanno una forma generalmente isodiametrica, pareti sottili e plastiche, e un citoplasma denso
@@ -572,14 +628,12 @@ h1 {
 
         <div class="faq-item">
             <div class="question" id="letter-D">Descrivere la morfologia della foglia:</div>
-            <div class="answer">La foglia è l'organo principale delle piante vascolari responsabile della fotosintesi,
-                della respirazione e della traspirazione. La parte espansa della foglia è detta lamina o lembo fogliare.
-                Sulla foglia è possibile distinguere una faccia superiore o ventrale, detta adassiale, e una inferiore o
-                dorsale, detta abassiale. La lamina fogliare è connessa al fusto tramite peduncolo, detto picciolo,
-                quelle senza picciolo sono dette sessili (angiosperme motocotiledoni). Le foglie possono essere semplici
-                (a lamina intera) o composte (quando più foglie partono da un asse detto rachide). La lamina è
-                caratterizzata da nervature che costituiscono il sistema conduttore della foglia e possono avere
-                disposizione diversa (penninervie, parallelinervie).</div>
+            <div class="answer">Le foglie possono avere forme molto diverse, come lanceolate, ovali, a forma di cuore o
+                palmate, a seconda della specie di pianta. Una foglia è composta da diverse parti:Lamina: è la parte
+                piatta e verde della foglia, che serve per la fotosintesi.Picciolo: è il piccolo stelo che collega la
+                foglia al ramo o al tronco della pianta.Margine: è il bordo della foglia, che può essere liscio,
+                seghettato o ondulato.Nervature: sono le linee visibili sulla foglia, che trasportano l’acqua e i
+                nutrienti. Le nervature principali sono chiamate "coste".</div>
         </div>
 
         <div class="faq-item">
@@ -1279,10 +1333,6 @@ h1 {
                 simili.</div>
         </div>
 
-        <div class="faq-item">
-            <div class="question" id="letter-D">Descrivere la vegetazione di tre biomi a scelta.</div>
-            <div class="answer"></div>
-        </div>
 
         <div class="faq-item">
             <div class="question" id="letter-D">Descrivere la morfologia di una specie vegetale di importanza
@@ -1297,16 +1347,6 @@ h1 {
                 d'acqua. Fiore:I fiori sono piccoli, ermafroditi o maschili, di colore bianco crema, riuniti in
                 infiorescenze a grappolo (mignole).Frutto:è una drupa ovale, inizialmente verde e poi, a maturazione, si
                 scurisce. Contiene un nocciolo legnoso che racchiude il seme.</div>
-        </div>
-
-        <div class="faq-item">
-            <div class="question" id="letter-F">Foresta pluviale tropicale:Vegetazione densa e stratificata con alberi
-                sempreverdi alti, liane, felci e muschi. Le piante hanno foglie grandi e cerose per trattenere
-                l'umidità. 2. Savana tropicale:Erbe alte e alberi sparsi come acacie e baobab. Adattata a siccità e
-                piogge stagionali, con radici profonde e foglie che riducono la perdita d'acqua. 3. Taiga:Dominata da
-                conifere resistenti al freddo, come pini e abeti, con aghi cerosi. Il sottobosco è povero, composto da
-                muschi, licheni e arbusti bassi.</div>
-            <div class="answer"></div>
         </div>
 
         <div class="faq-item">
@@ -1412,8 +1452,25 @@ h1 {
         </div>
 
         <div class="faq-item">
+            <div class="question" id="letter-L">La nervatura della foglia spiega in modo semplice: funzione, anatomia,
+                morfologia</div>
+            <div class="answer">Le nervature permettono il trasporto di sostanze vitali per la pianta. Le vene
+                principali portano l'acqua e i nutrienti alle cellule della foglia, mentre le nervature secondarie
+                distribuiscono questi elementi in tutta la foglia. Inoltre, la nervatura aiuta a rafforzare la foglia,
+                rendendola più resistente.Le nervature sono formate da un insieme di vasi conduttori, come il xilema
+                (che trasporta acqua e sali minerali) e il floema (che trasporta i prodotti della fotosintesi, come
+                zuccheri). Le principali nervature corrono lungo la foglia e si ramificano in venature più piccole.Le
+                nervature della foglia possono essere Reticolata: le nervature formano una rete ramificata, tipica delle
+                dicotiledoni (piante come il faggio). Parallelinervia: le nervature sono disposte parallelamente, come
+                nelle monocotiledoni (piante come l'erba o il mais).
+                La disposizione delle nervature è utile per identificare la specie della pianta e per comprendere come
+                si distribuiscono i flussi di nutrienti e acqua all'interno della foglia.
+            </div>
+        </div>
+
+        <div class="faq-item">
             <div class="question" id="letter-L">La tessitura del terreno dipende dalla sua composizione in:</div>
-            <div class="answer"></div>
+            <div class="answer">Argilla, limo, sabbia.</div>
         </div>
 
         <div class="faq-item">
@@ -1439,9 +1496,9 @@ h1 {
         </div>
 
         <div class="faq-item">
-            <div class="question" id="letter-Q">Quale specie appartiene alla famiglia delle graminaceae? La pannocchia
+            <div class="question" id="letter-Q">Quale specie appartiene alla famiglia delle graminaceae?
             </div>
-            <div class="answer"></div>
+            <div class="answer">La pannocchia</div>
         </div>
 
         <div class="faq-item">
@@ -1497,15 +1554,24 @@ h1 {
             searchBar.classList.toggle('hidden');
         });
 
-        // Funzionalità di ricerca
+        // Funzionalità di ricerca (nuova versione)
         document.getElementById('search-input').addEventListener('input', function () {
             const searchQuery = this.value.toLowerCase();
-            const answerItems = document.querySelectorAll('.answer-item');
 
-            answerItems.forEach(item => {
-                const answerText = item.innerText.toLowerCase();
+            // Selezioniamo ogni blocco FAQ
+            const faqItems = document.querySelectorAll('.faq-item');
 
-                if (answerText.includes(searchQuery)) {
+            faqItems.forEach(item => {
+                // Troviamo la domanda e la risposta al suo interno
+                const questionEl = item.querySelector('.question');
+                const answerEl = item.querySelector('.answer');
+
+                // Se per qualche ragione non ci fossero, inizializziamo a stringa vuota
+                const questionText = questionEl ? questionEl.innerText.toLowerCase() : '';
+                const answerText = answerEl ? answerEl.innerText.toLowerCase() : '';
+
+                // Mostra/nascondi l’intero blocco FAQ in base al match del searchQuery
+                if (questionText.includes(searchQuery) || answerText.includes(searchQuery)) {
                     item.classList.remove('hidden');
                 } else {
                     item.classList.add('hidden');
